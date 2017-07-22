@@ -28,6 +28,8 @@ import org.fdroid.fdroid.data.App;
 import org.fdroid.fdroid.data.Schema.AppMetadataTable;
 import org.fdroid.fdroid.views.AppListAdapter;
 
+import java.util.List;
+
 public abstract class AppListFragment extends ListFragment implements
         AdapterView.OnItemClickListener,
         Preferences.ChangeListener,
@@ -58,6 +60,8 @@ public abstract class AppListFragment extends ListFragment implements
 
     private AppListAdapter appAdapter;
 
+    private boolean filterAppList = false; // Sam
+
     @Nullable private String searchQuery;
 
     protected abstract AppListAdapter getAppListAdapter();
@@ -71,6 +75,17 @@ public abstract class AppListFragment extends ListFragment implements
     protected abstract int getEmptyMessage();
 
     protected abstract int getNoSearchResultsMessage();
+
+    // Sam
+    public void setFilterAppList(boolean f)
+    {
+        filterAppList = f;
+    }
+
+    boolean getFilterAppList()
+    {
+        return filterAppList;
+    }
 
     /**
      * Subclasses can choose to do different things based on when a user begins searching.
@@ -195,12 +210,94 @@ public abstract class AppListFragment extends ListFragment implements
         appAdapter.swapCursor(null);
     }
 
+    // Sam
+    public String getAllowedAppsSelection()
+    {
+
+        String s = null;
+
+        if ( getFilterAppList()  )
+        {
+            List<String> allowedApps = Preferences.get().getAllowedApps();
+
+            if ( allowedApps.size() > 0 )
+            {
+
+                StringBuilder rString = new StringBuilder();
+
+                String sep = ",";
+
+                for (String each : allowedApps) {
+                    rString.append(sep).append("'" + each + "'");
+                }
+
+                String result = rString.substring(sep.length());
+
+                s = "package_packageName IN (" + result + ")";
+            }
+            else
+                s = "package_packageName IN ()";
+        }
+
+        return s;
+
+    }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        //Utils.debugLog(TAG, "Iris OnCreateLoader");
+
         Uri uri = updateSearchStatus() ? getDataUri(searchQuery) : getDataUri();
-        return new CursorLoader(
-                getActivity(), uri, APP_PROJECTION, null, null, APP_SORT);
+/*
+        String s = null;
+
+        if ( getFilterAppList() )
+        {
+            List<String> allowedApps = Preferences.get().getAllowedApps();
+
+            Utils.debugLog(TAG, "Allowed Apps"+allowedApps + "count:"+allowedApps.size());
+
+            String rString = TextUtils.join(",", allowedApps);
+
+            s = "package_packageName IN ("+rString+")";
+        }
+*/
+
+        class MyCursorLoader extends CursorLoader
+        {
+            public MyCursorLoader(Context context) {
+                super(context);
+
+            }
+            public MyCursorLoader(Context context, Uri uri, String[] projection, String selection,
+                                  String[] selectionArgs, String sortOrder)
+            {
+                super(context,uri,projection,selection,selectionArgs,sortOrder);
+            }
+            @Override
+            protected void onStartLoading()
+            {
+                String  s = getAllowedAppsSelection();
+                setSelection(s);
+                super.onStartLoading();
+                Utils.debugLog(TAG, "Iris OnStartLoading");
+
+            }
+        };
+
+        //String  s = getAllowedAppsSelection();
+        //Utils.debugLog(TAG, "Iris Selection:"+s);
+        MyCursorLoader cloader =  new MyCursorLoader(
+                getActivity(), uri, APP_PROJECTION,null/*s*/,null, APP_SORT);
+
+
+
+
+        return cloader;
     }
+
+
+
 
     /**
      * Notifies the subclass via {@link AppListFragment#onSearch()} and {@link AppListFragment#onSearchStopped()}

@@ -166,6 +166,9 @@ public class AvailableAppsFragment extends AppListFragment implements
         setupCategorySpinner((Spinner) view.findViewById(R.id.category_spinner));
         defaultCategory = CategoryProvider.Helper.getCategoryWhatsNew(getActivity());
 
+        // Sam
+        setFilterAppList(true);
+
         return view;
     }
 

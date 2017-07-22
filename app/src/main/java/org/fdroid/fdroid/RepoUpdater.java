@@ -49,9 +49,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.CodeSigner;
@@ -94,16 +97,39 @@ public class RepoUpdater {
     private boolean hasChanged;
 
     @Nullable
+    private ProgressListener downloadProgressListener_applist; // sam
     private ProgressListener downloadProgressListener;
     private ProgressListener committingProgressListener;
     private ProgressListener processXmlProgressListener;
     private String cacheTag;
+    private String cacheTag_applist; // sam
     private X509Certificate signingCertFromJar;
 
     @NonNull
     private final RepoPersister persister;
 
     private final List<RepoPushRequest> repoPushRequestList = new ArrayList<>();
+
+    public static void getAllowedAppsFromFile (File fl,List appList) throws Exception
+    {
+        FileInputStream fin = new FileInputStream(fl);
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
+        String line = null;
+        while ((line = reader.readLine()) != null)
+        {
+            if ( !line.startsWith("#") )
+            {
+                appList.add(line);
+                Log.w(TAG, "Parsing File:" + line);
+            }
+        }
+        reader.close();
+
+        //String ret = convertStreamToString(fin);
+        //Make sure you close all streams.
+        fin.close();
+    }
 
     /**
      * Updates an app repo as read out of the database into a {@link Repo} instance.
@@ -139,11 +165,46 @@ public class RepoUpdater {
         return hasChanged;
     }
 
+    // sam
+    // ToDo: optimize this later to check the tag of the applist file and if it is not changed not do anything
+    private Downloader downloadAppList() throws UpdateException {
+        Downloader downloader = null;
+
+        try {
+            // fix the static ip
+            String url = Preferences.get().getAllowedAppsURL();
+            downloader = DownloaderFactory.create(context, url);
+            //downloader.setCacheTag(repo.lastetag);
+            downloader.setListener(downloadProgressListener_applist);
+            downloader.download();
+
+            //if (downloader.isCached()) {
+            //    // The applist is unchanged since we last read it. We just mark
+            //    // everything that came from this repo as being updated.
+            //    Utils.debugLog(TAG, "App list is up to date (by etag)");
+            //}
+
+        } catch (IOException e) {
+            if (downloader != null && downloader.outputFile != null) {
+                if (!downloader.outputFile.delete()) {
+                    Log.w(TAG, "Couldn't delete file: " + downloader.outputFile.getAbsolutePath());
+                }
+            }
+
+            throw new UpdateException(repo, "Error getting applist file", e);
+        } catch (InterruptedException e) {
+            // ignored if canceled, the local database just won't be updated
+            e.printStackTrace();
+        }
+
+        return downloader;
+    }
+
     private Downloader downloadIndex() throws UpdateException {
         Downloader downloader = null;
         try {
             downloader = DownloaderFactory.create(context, indexUrl);
-            downloader.setCacheTag(repo.lastetag);
+            downloader.setCacheTag(""/*repo.lastetag*/); // sam: force redownload always
             downloader.setListener(downloadProgressListener);
             downloader.download();
 
@@ -175,12 +236,32 @@ public class RepoUpdater {
      *
      * @throws UpdateException All error states will come from here.
      */
+    // Sam
     public void update() throws UpdateException {
 
         final Downloader downloader = downloadIndex();
-        hasChanged = downloader.hasChanged();
+        final Downloader downloader_applist = downloadAppList();
+
+
+        // ToDo: currently we always consider that the applist has changed, optimize this by really doing this check
+        // hasChanged = downloader.hasChanged() & downloader_applist.hasChanged();
+        hasChanged = true;
 
         if (hasChanged) {
+
+            List allowedApps = Preferences.get().getAllowedApps();
+
+            try
+            {
+                allowedApps.clear();
+                Utils.debugLog(TAG, "Clearing AllowedApps");
+                getAllowedAppsFromFile(downloader_applist.outputFile, allowedApps);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
             // Don't worry about checking the status code for 200. If it was a
             // successful download, then we will have a file ready to use:
             cacheTag = downloader.getCacheTag();
@@ -203,6 +284,11 @@ public class RepoUpdater {
             @Override
             public void receiveApp(App app, List<Apk> packages) {
                 try {
+
+                    // Sam here we check and ignore stuff
+                    //AppFilter filter = new AppFilter();
+
+                    //if ( !filter.exclude(app) ) // Sam
                     persister.saveToDb(app, packages);
                 } catch (UpdateException e) {
                     throw new RuntimeException("Error while saving repo details to database.", e);

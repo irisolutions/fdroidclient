@@ -107,6 +107,8 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     private final List<ChangeListener> localRepoHttpsListeners = new ArrayList<>();
     private final List<ChangeListener> unstableUpdatesListeners = new ArrayList<>();
 
+    private final List<String> allowedApps = new ArrayList<>(); // Sam
+
     private boolean isInitialized(String key) {
         return initialized.containsKey(key) && initialized.get(key);
     }
@@ -294,6 +296,17 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
         Calendar recent = Calendar.getInstance();
         recent.add(Calendar.DAY_OF_YEAR, -maxHistoryDays);
         return recent.getTime();
+    }
+
+    // Sam
+    public List<String> getAllowedApps()
+    {
+        return allowedApps;
+    }
+    public String getAllowedAppsURL()
+    {
+        //return "http://34.209.162.150/applist.txt";
+        return "http://34.209.162.150/IrisCentral/web/app_dev.php/dashboard/command/appList/najah_child";
     }
 
     /**
