@@ -9,6 +9,9 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom"/>
     <item
+        android:id="@+id/action_iris_login"
+        android:title="Login" />
+    <item
         android:id="@+id/action_update_repo"
         android:icon="@drawable/ic_refresh_white"
         android:title="@string/menu_update_repo"

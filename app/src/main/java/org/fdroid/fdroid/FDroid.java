@@ -49,6 +49,7 @@ import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
+import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
 import org.fdroid.fdroid.views.swap.SwapWorkflowActivity;
 
@@ -311,6 +312,9 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
 
         switch (item.getItemId()) {
 
+            case R.id.action_iris_login:
+                startActivity(new Intent(this, IrisLogin.class));
+                return true;
             case R.id.action_update_repo:
                 UpdateService.updateNow(this);
                 return true;
