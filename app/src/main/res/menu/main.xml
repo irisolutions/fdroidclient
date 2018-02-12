@@ -10,7 +10,7 @@
         app:showAsAction="collapseActionView|ifRoom"/>
     <item
         android:id="@+id/action_iris_login"
-        android:title="Login" />
+        android:title="Sign-in" />
     <item
         android:id="@+id/action_update_repo"
         android:icon="@drawable/ic_refresh_white"

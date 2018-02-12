@@ -11,8 +11,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,9 @@ import org.fdroid.fdroid.views.AvailableAppListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.fdroid.fdroid.Preferences.PREF_LOCAL_REPO_NAME;
+import static org.fdroid.fdroid.R.xml.preferences;
 
 public class AvailableAppsFragment extends AppListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -164,9 +169,10 @@ public class AvailableAppsFragment extends AppListFragment implements
 
         categoryWrapper = view.findViewById(R.id.category_wrapper);
         setupCategorySpinner((Spinner) view.findViewById(R.id.category_spinner));
-        defaultCategory = CategoryProvider.Helper.getCategoryWhatsNew(getActivity());
+        //defaultCategory = CategoryProvider.Helper.getCategoryWhatsNew(getActivity());
 
         // Sam
+        defaultCategory = CategoryProvider.Helper.getCategoryAll(getActivity());
         setFilterAppList(true);
 
         return view;
@@ -210,6 +216,9 @@ public class AvailableAppsFragment extends AppListFragment implements
     @Override
     public void onResume() {
         /* restore the saved Category Spinner position */
+
+        Utils.debugLog(TAG, "OnResume");
+
         Activity activity = getActivity();
         SharedPreferences p = activity.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         currentCategory = p.getString(CATEGORY_KEY, defaultCategory);
@@ -251,4 +260,38 @@ public class AvailableAppsFragment extends AppListFragment implements
             categoryWrapper.setVisibility(View.VISIBLE);
         }
     }
+    // sam
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        super.onLoadFinished(loader,data);
+
+        if ( getRefreshViewFlag() )
+        {
+            getLoaderManager().restartLoader(0, null, this);
+            clearRefreshViewFlag();
+        }
+    }
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        super.onLoaderReset(loader);
+    }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args)
+    {
+        return super.onCreateLoader(id,args);
+    }
+    private void clearRefreshViewFlag()
+    {
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor e = p.edit();
+        e.putBoolean("refreshViewFlag", false);
+        e.apply();
+    }
+    private boolean getRefreshViewFlag()
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        return (preferences.getBoolean("refreshViewFlag", false));
+    }
+
 }

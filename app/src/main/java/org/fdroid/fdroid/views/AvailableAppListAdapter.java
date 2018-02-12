@@ -3,6 +3,11 @@ package org.fdroid.fdroid.views;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+
+import org.fdroid.fdroid.views.fragments.AppListFragment;
 
 public class AvailableAppListAdapter extends AppListAdapter {
 

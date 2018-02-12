@@ -25,8 +25,10 @@ package org.fdroid.fdroid;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -171,8 +173,12 @@ public class RepoUpdater {
         Downloader downloader = null;
 
         try {
-            // fix the static ip
+
             String url = Preferences.get().getAllowedAppsURL();
+
+            if (url == null)
+                throw new UpdateException(repo, "Error getting user application list, have you signed-in?", new IOException());
+
             downloader = DownloaderFactory.create(context, url);
             //downloader.setCacheTag(repo.lastetag);
             downloader.setListener(downloadProgressListener_applist);
@@ -237,8 +243,20 @@ public class RepoUpdater {
      * @throws UpdateException All error states will come from here.
      */
     // Sam
+    private void setRefreshViewFlag()
+    {
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor e = p.edit();
+        e.putBoolean("refreshViewFlag", true);
+        e.apply();
+    }
     public void update() throws UpdateException {
 
+        // sam
+        Utils.debugLog(TAG, "RepoUpdater Update is called!");
+        setRefreshViewFlag();
+
+        //
         final Downloader downloader = downloadIndex();
         final Downloader downloader_applist = downloadAppList();
 

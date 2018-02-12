@@ -68,6 +68,9 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     public static final String PREF_PROXY_PORT = "proxyPort";
     public static final String PREF_SHOW_NFC_DURING_SWAP = "showNfcDuringSwap";
     public static final String PREF_POST_PRIVILEGED_INSTALL = "postPrivilegedInstall";
+    // sam
+    public static final String PREF_USERNAME = "iris-username";
+    public static final String PREF_PASSWORD = "iris-password";
 
     private static final boolean DEFAULT_ROOTED = true;
     private static final boolean DEFAULT_HIDE_ANTI_FEATURE_APPS = false;
@@ -87,6 +90,10 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     public static final int DEFAULT_PROXY_PORT = 8118;
     private static final boolean DEFAULT_SHOW_NFC_DURING_SWAP = true;
     private static final boolean DEFAULT_POST_PRIVILEGED_INSTALL = false;
+
+    // sam
+    public static final String DEFAULT_USERNAME = "";
+    public static final String DEFAULT_PASSWORD = "";
 
     public enum Theme {
         light,
@@ -299,14 +306,41 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     }
 
     // Sam
+    public String getPrefUsername() {
+        return preferences.getString(PREF_USERNAME, DEFAULT_USERNAME);
+    }
+    public String getPrefPassword() {
+        return preferences.getString(PREF_PASSWORD, DEFAULT_PASSWORD);
+    }
+    public void setPrefUsername(String value)
+    {
+        preferences.edit().putString(PREF_USERNAME, value).apply();
+    }
+    public void setPrefPassword(String value)
+    {
+        preferences.edit().putString(PREF_PASSWORD, value).apply();
+    }
+
+    // Sam
     public List<String> getAllowedApps()
     {
         return allowedApps;
     }
     public String getAllowedAppsURL()
     {
+        String user  = getPrefUsername();
+        String pass  = getPrefUsername();
+
+        if ( user.isEmpty() || pass.isEmpty())
+            return null;
+
+        String host    = "http://34.209.162.150";
+        String baseUrl = "IrisCentral/web/app_dev.php/dashboard/command/appList";
         //return "http://34.209.162.150/applist.txt";
-        return "http://34.209.162.150/IrisCentral/web/app_dev.php/dashboard/command/appList/najah_child";
+
+        // ToDo: use password as well
+        return host+"/" + baseUrl + "/" + user;
+
     }
 
     /**

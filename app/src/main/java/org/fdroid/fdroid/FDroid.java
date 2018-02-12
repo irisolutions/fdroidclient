@@ -311,10 +311,10 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-
+            // sam
             case R.id.action_iris_login:
                 startActivity(new Intent(this, IrisLogin.class));
-                return true;
+
             case R.id.action_update_repo:
                 UpdateService.updateNow(this);
                 return true;
