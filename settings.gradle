@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':fdroidtablet'
 if (hasProperty('sourceDeps')) {
     include ':extern:support-v4-preferencefragment'
     include ':extern:nanohttpd:core'
