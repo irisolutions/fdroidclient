@@ -160,6 +160,7 @@ android {
         all {
             minifyEnabled true
             useProguard true
+            //todo : kahled : handle and fix shrinkResources
 //            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'src/androidTest/proguard-rules.pro'

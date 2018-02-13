@@ -6,12 +6,13 @@ import android.os.Bundle;
 
 import org.fdroid.fdroid.FDroid;
 
-public class MainActivity extends AppCompatActivity {
+public class FDroidTablet extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Intent intent = new Intent(this, FDroid.class);
         startActivity(intent);
     }
