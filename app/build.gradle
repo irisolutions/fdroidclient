@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+//apply plugin: 'com.android.application'
 apply plugin: 'witness'
 apply plugin: 'checkstyle'
 apply plugin: 'pmd'
@@ -18,12 +19,10 @@ repositories {
 }
 
 dependencies {
-
     compile('ch.acra:acra:4.9.1') {
         exclude module: 'support-v4'
         exclude module: 'support-annotations'
     }
-
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:support-annotations:24.2.1'
@@ -44,8 +43,16 @@ dependencies {
     androidTestCompile 'com.android.support:support-annotations:24.2.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
+    //try to add these libraries here
+    compile 'com.madgag.spongycastle:pkix:1.53.0.0'
+    compile 'com.madgag.spongycastle:prov:1.53.0.0'
+    compile 'com.madgag.spongycastle:core:1.53.0.0'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('C:/Users/khale/AndroidStudioProjects/fdroidclient/libs/binaryDeps/nanohttpd-2.1.0.jar')
+    implementation files('C:/Users/khale/AndroidStudioProjects/fdroidclient/libs/binaryDeps/zipsigner.jar')
+    implementation files('libs/binaryDeps/support-v4-preferencefragment-release.aar')
 }
-
+//
 //if (!hasProperty('sourceDeps')) {
 //
 //    repositories {
