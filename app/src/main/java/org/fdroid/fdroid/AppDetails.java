@@ -1170,35 +1170,35 @@ public class AppDetails extends AppCompatActivity {
             public void onClick(View v) {
                 String url = null;
                 App app = appDetails.getApp();
-                switch (v.getId()) {
-                    case R.id.website:
-                        url = app.webURL;
-                        break;
-                    case R.id.email:
-                        final String subject = Uri.encode(getString(R.string.app_details_subject, app.name));
-                        url = "mailto:" + app.email + "?subject=" + subject;
-                        break;
-                    case R.id.source:
-                        url = app.sourceURL;
-                        break;
-                    case R.id.issues:
-                        url = app.trackerURL;
-                        break;
-                    case R.id.changelog:
-                        url = app.changelogURL;
-                        break;
-                    case R.id.donate:
-                        url = app.donateURL;
-                        break;
-                    case R.id.bitcoin:
-                        url = "bitcoin:" + app.bitcoinAddr;
-                        break;
-                    case R.id.litecoin:
-                        url = "litecoin:" + app.litecoinAddr;
-                        break;
-                    case R.id.flattr:
-                        url = "https://flattr.com/thing/" + app.flattrID;
-                        break;
+                int i = v.getId();
+                if (i == R.id.website) {
+                    url = app.webURL;
+
+                } else if (i == R.id.email) {
+                    final String subject = Uri.encode(getString(R.string.app_details_subject, app.name));
+                    url = "mailto:" + app.email + "?subject=" + subject;
+
+                } else if (i == R.id.source) {
+                    url = app.sourceURL;
+
+                } else if (i == R.id.issues) {
+                    url = app.trackerURL;
+
+                } else if (i == R.id.changelog) {
+                    url = app.changelogURL;
+
+                } else if (i == R.id.donate) {
+                    url = app.donateURL;
+
+                } else if (i == R.id.bitcoin) {
+                    url = "bitcoin:" + app.bitcoinAddr;
+
+                } else if (i == R.id.litecoin) {
+                    url = "litecoin:" + app.litecoinAddr;
+
+                } else if (i == R.id.flattr) {
+                    url = "https://flattr.com/thing/" + app.flattrID;
+
                 }
                 if (url != null) {
                     ((AppDetails) getActivity()).tryOpenUri(url);
@@ -1784,3 +1784,44 @@ public class AppDetails extends AppCompatActivity {
     }
 
 }
+
+/*
+    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            String url = null;
+            App app = appDetails.getApp();
+            switch (v.getId()) {
+                case R.id.website:
+                    url = app.webURL;
+                    break;
+                case R.id.email:
+                    final String subject = Uri.encode(getString(R.string.app_details_subject, app.name));
+                    url = "mailto:" + app.email + "?subject=" + subject;
+                    break;
+                case R.id.source:
+                    url = app.sourceURL;
+                    break;
+                case R.id.issues:
+                    url = app.trackerURL;
+                    break;
+                case R.id.changelog:
+                    url = app.changelogURL;
+                    break;
+                case R.id.donate:
+                    url = app.donateURL;
+                    break;
+                case R.id.bitcoin:
+                    url = "bitcoin:" + app.bitcoinAddr;
+                    break;
+                case R.id.litecoin:
+                    url = "litecoin:" + app.litecoinAddr;
+                    break;
+                case R.id.flattr:
+                    url = "https://flattr.com/thing/" + app.flattrID;
+                    break;
+            }
+            if (url != null) {
+                ((AppDetails) getActivity()).tryOpenUri(url);
+            }
+        }
+    };*/

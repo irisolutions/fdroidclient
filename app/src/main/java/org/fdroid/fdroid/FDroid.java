@@ -310,57 +310,53 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            // sam
-            case R.id.action_iris_login:
-                startActivity(new Intent(this, IrisLogin.class));
+        int i = item.getItemId();
+        if (i == R.id.action_iris_login) {
+            startActivity(new Intent(this, IrisLogin.class));
 
-            case R.id.action_update_repo:
-                UpdateService.updateNow(this);
-                return true;
 
-            case R.id.action_manage_repos:
-                startActivity(new Intent(this, ManageReposActivity.class));
-                return true;
-
-            case R.id.action_settings:
-                Intent prefs = new Intent(getBaseContext(), PreferencesActivity.class);
-                startActivityForResult(prefs, REQUEST_PREFS);
-                return true;
-
-            case R.id.action_swap:
-                startActivity(new Intent(this, SwapWorkflowActivity.class));
-                return true;
-
-            case R.id.action_bluetooth_apk:
-                /*
+            UpdateService.updateNow(this);
+            return true;
+        } else if (i == R.id.action_update_repo) {
+            UpdateService.updateNow(this);
+            return true;
+        } else if (i == R.id.action_manage_repos) {
+            startActivity(new Intent(this, ManageReposActivity.class));
+            return true;
+        } else if (i == R.id.action_settings) {
+            Intent prefs = new Intent(getBaseContext(), PreferencesActivity.class);
+            startActivityForResult(prefs, REQUEST_PREFS);
+            return true;
+        } else if (i == R.id.action_swap) {
+            startActivity(new Intent(this, SwapWorkflowActivity.class));
+            return true;
+        } else if (i == R.id.action_bluetooth_apk) {/*
                  * If Bluetooth has not been enabled/turned on, then enabling
                  * device discoverability will automatically enable Bluetooth
                  */
-                Intent discoverBt = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverBt.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 121);
-                startActivityForResult(discoverBt, REQUEST_ENABLE_BLUETOOTH);
-                // if this is successful, the Bluetooth transfer is started
-                return true;
+            Intent discoverBt = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverBt.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 121);
+            startActivityForResult(discoverBt, REQUEST_ENABLE_BLUETOOTH);
+            // if this is successful, the Bluetooth transfer is started
+            return true;
+        } else if (i == R.id.action_about) {
+            View view = LayoutInflater.from(this).inflate(R.layout.about, null);
 
-            case R.id.action_about:
-                View view = LayoutInflater.from(this).inflate(R.layout.about, null);
+            String versionName = Utils.getVersionName(this);
+            if (versionName != null) {
+                ((TextView) view.findViewById(R.id.version)).setText(versionName);
+            }
 
-                String versionName = Utils.getVersionName(this);
-                if (versionName != null) {
-                    ((TextView) view.findViewById(R.id.version)).setText(versionName);
-                }
-
-                AlertDialog alrt = new AlertDialog.Builder(this).setView(view).create();
-                alrt.setTitle(R.string.about_title);
-                alrt.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.ok),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                            }
-                        });
-                alrt.show();
-                return true;
+            AlertDialog alrt = new AlertDialog.Builder(this).setView(view).create();
+            alrt.setTitle(R.string.about_title);
+            alrt.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.ok),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    });
+            alrt.show();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -458,3 +454,65 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     }
 
 }
+
+
+/*
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            // sam
+            case R.id.action_iris_login:
+                startActivity(new Intent(this, IrisLogin.class));
+
+            case R.id.action_update_repo:
+                UpdateService.updateNow(this);
+                return true;
+
+            case R.id.action_manage_repos:
+                startActivity(new Intent(this, ManageReposActivity.class));
+                return true;
+
+            case R.id.action_settings:
+                Intent prefs = new Intent(getBaseContext(), PreferencesActivity.class);
+                startActivityForResult(prefs, REQUEST_PREFS);
+                return true;
+
+            case R.id.action_swap:
+                startActivity(new Intent(this, SwapWorkflowActivity.class));
+                return true;
+
+            case R.id.action_bluetooth_apk:
+                */
+/*
+                 * If Bluetooth has not been enabled/turned on, then enabling
+                 * device discoverability will automatically enable Bluetooth
+                 *//*
+
+                Intent discoverBt = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                discoverBt.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 121);
+                startActivityForResult(discoverBt, REQUEST_ENABLE_BLUETOOTH);
+                // if this is successful, the Bluetooth transfer is started
+                return true;
+
+            case R.id.action_about:
+                View view = LayoutInflater.from(this).inflate(R.layout.about, null);
+
+                String versionName = Utils.getVersionName(this);
+                if (versionName != null) {
+                    ((TextView) view.findViewById(R.id.version)).setText(versionName);
+                }
+
+                AlertDialog alrt = new AlertDialog.Builder(this).setView(view).create();
+                alrt.setTitle(R.string.about_title);
+                alrt.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                            }
+                        });
+                alrt.show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }*/

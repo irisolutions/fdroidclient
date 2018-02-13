@@ -192,17 +192,17 @@ public class RepoDetailsActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.id.menu_delete:
-                promptForDelete();
-                return true;
-            case R.id.menu_enable_nfc:
-                Intent intent = new Intent(this, NfcNotEnabledActivity.class);
-                startActivity(intent);
-                return true;
+        int i = item.getItemId();
+        if (i == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        } else if (i == R.id.menu_delete) {
+            promptForDelete();
+            return true;
+        } else if (i == R.id.menu_enable_nfc) {
+            Intent intent = new Intent(this, NfcNotEnabledActivity.class);
+            startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

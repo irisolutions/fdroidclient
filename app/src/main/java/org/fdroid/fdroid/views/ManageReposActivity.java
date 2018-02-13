@@ -155,18 +155,18 @@ public class ManageReposActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent destIntent = new Intent(this, FDroid.class);
-                setResult(RESULT_OK, destIntent);
-                NavUtils.navigateUpTo(this, destIntent);
-                return true;
-            case R.id.action_add_repo:
-                showAddRepo();
-                return true;
-            case R.id.action_update_repo:
-                UpdateService.updateNow(this);
-                return true;
+        int i = item.getItemId();
+        if (i == android.R.id.home) {
+            Intent destIntent = new Intent(this, FDroid.class);
+            setResult(RESULT_OK, destIntent);
+            NavUtils.navigateUpTo(this, destIntent);
+            return true;
+        } else if (i == R.id.action_add_repo) {
+            showAddRepo();
+            return true;
+        } else if (i == R.id.action_update_repo) {
+            UpdateService.updateNow(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -686,7 +686,7 @@ public class ManageReposActivity extends ActionBarActivity {
     private void checkIfNewRepoOnSameWifi(NewRepoConfig newRepo) {
         // if this is a local repo, check we're on the same wifi
         if (!TextUtils.isEmpty(newRepo.getBssid())) {
-            WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             String bssid = wifiInfo.getBSSID();
             if (TextUtils.isEmpty(bssid)) { /* not all devices have wifi */
@@ -812,3 +812,23 @@ public class ManageReposActivity extends ActionBarActivity {
         }
     }
 }
+
+/*
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent destIntent = new Intent(this, FDroid.class);
+                setResult(RESULT_OK, destIntent);
+                NavUtils.navigateUpTo(this, destIntent);
+                return true;
+            case R.id.action_add_repo:
+                showAddRepo();
+                return true;
+            case R.id.action_update_repo:
+                UpdateService.updateNow(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }*/

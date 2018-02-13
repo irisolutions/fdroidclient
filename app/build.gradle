@@ -48,8 +48,8 @@ dependencies {
     compile 'com.madgag.spongycastle:prov:1.53.0.0'
     compile 'com.madgag.spongycastle:core:1.53.0.0'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('C:/Users/khale/AndroidStudioProjects/fdroidclient/libs/binaryDeps/nanohttpd-2.1.0.jar')
-    implementation files('C:/Users/khale/AndroidStudioProjects/fdroidclient/libs/binaryDeps/zipsigner.jar')
+    implementation files('libs/binaryDeps/nanohttpd-2.1.0.jar')
+    implementation files('libs/binaryDeps/zipsigner.jar')
     implementation files('libs/binaryDeps/support-v4-preferencefragment-release.aar')
 }
 //
