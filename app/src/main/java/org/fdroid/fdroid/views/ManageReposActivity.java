@@ -208,9 +208,9 @@ public class ManageReposActivity extends ActionBarActivity {
      * Utility class to encapsulate the process of adding a new repo (or an existing one,
      * depending on if the incoming address is the same as a previous repo). It is responsible
      * for managing the lifecycle of adding a repo:
-     *  * Showing the add dialog
-     *  * Deciding whether to add a new repo or update an existing one
-     *  * Search for repos at common suffixes (/, /fdroid/repo, /repo)
+     * * Showing the add dialog
+     * * Deciding whether to add a new repo or update an existing one
+     * * Search for repos at common suffixes (/, /fdroid/repo, /repo)
      */
     private class AddRepo {
 
@@ -331,10 +331,12 @@ public class ManageReposActivity extends ActionBarActivity {
             final TextWatcher textChangedListener = new TextWatcher() {
 
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
                 @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) { }
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
                 @Override
                 public void afterTextChanged(Editable s) {
@@ -574,7 +576,7 @@ public class ManageReposActivity extends ActionBarActivity {
          * Some basic sanitization of URLs, so that two URLs which have the same semantic meaning
          * are represented by the exact same string by F-Droid. This will help to make sure that,
          * e.g. "http://10.0.1.50" and "http://10.0.1.50/" are not two different repositories.
-         *
+         * <p>
          * Currently it normalizes the path so that "/./" are removed and "test/../" is collapsed.
          * This is done using {@link URI#normalize()}. It also removes multiple consecutive forward
          * slashes in the path and replaces them with one. Finally, it removes trailing slashes.
@@ -812,23 +814,3 @@ public class ManageReposActivity extends ActionBarActivity {
         }
     }
 }
-
-/*
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent destIntent = new Intent(this, FDroid.class);
-                setResult(RESULT_OK, destIntent);
-                NavUtils.navigateUpTo(this, destIntent);
-                return true;
-            case R.id.action_add_repo:
-                showAddRepo();
-                return true;
-            case R.id.action_update_repo:
-                UpdateService.updateNow(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
