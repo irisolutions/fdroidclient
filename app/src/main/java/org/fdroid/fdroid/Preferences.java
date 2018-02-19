@@ -72,6 +72,10 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     public static final String PREF_USERNAME = "iris-username";
     public static final String PREF_PASSWORD = "iris-password";
 
+    public static final String PREF_FCM_TOCKEN = "FCMToken";
+    public static final String PREF_DEVICE_TYPE = "deviceType";
+
+
     private static final boolean DEFAULT_ROOTED = true;
     private static final boolean DEFAULT_HIDE_ANTI_FEATURE_APPS = false;
     private static final int DEFAULT_UPD_HISTORY = 14;
@@ -91,9 +95,10 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     private static final boolean DEFAULT_SHOW_NFC_DURING_SWAP = true;
     private static final boolean DEFAULT_POST_PRIVILEGED_INSTALL = false;
 
-    // sam
     public static final String DEFAULT_USERNAME = "";
     public static final String DEFAULT_PASSWORD = "";
+    public static final String DEFAULT_DEVICE_TYPE= "tablet";
+    public static final String DEFAULT_FCM_TOKEN= "";
 
     public enum Theme {
         light,
@@ -320,6 +325,23 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     {
         preferences.edit().putString(PREF_PASSWORD, value).apply();
     }
+
+    public void setPrefFCMToken(String token) {
+        preferences.edit().putString(PREF_FCM_TOCKEN, token).apply();
+    }
+
+    public void setPrefDeviceType(String type) {
+        preferences.edit().putString(PREF_DEVICE_TYPE, type).apply();
+    }
+
+    public String getPrefFCMToken() {
+        return preferences.getString(PREF_FCM_TOCKEN, DEFAULT_PASSWORD);
+    }
+
+    public String getPrefDeviceType() {
+        return preferences.getString(PREF_DEVICE_TYPE, DEFAULT_PASSWORD);
+    }
+
 
     // Sam
     public List<String> getAllowedApps()

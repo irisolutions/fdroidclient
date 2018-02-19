@@ -25,6 +25,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -48,6 +49,7 @@ import org.fdroid.fdroid.compat.TabManager;
 import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
+import org.fdroid.fdroid.receiver.TokenReciver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
@@ -84,6 +86,25 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     @Nullable
     private String pendingSearchQuery;
 
+    private TokenReciver tokenReceiver = new TokenReciver();
+   /* private BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                String token = bundle.getString("token");
+                String type = bundle.getString("type");
+
+                Preferences.get().setPrefFCMToken(token);
+                Preferences.get().setPrefDeviceType(type);
+
+                Toast.makeText(FDroid.this, token +"" +"\n"+type,
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -112,6 +133,10 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         Uri uri = AppProvider.getContentUri();
         getContentResolver().registerContentObserver(uri, true, new AppObserver());
 
+        String token = Preferences.get().getPrefFCMToken();
+        String type = Preferences.get().getPrefDeviceType();
+        Toast.makeText(FDroid.this, token +"" +"\n"+type,
+                Toast.LENGTH_LONG).show();
         // Re-enable once it can be disabled via a setting
         // See https://gitlab.com/fdroid/fdroidclient/issues/435
         //
@@ -139,6 +164,20 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         // AppDetails and RepoDetailsActivity set different NFC actions, so reset here
         NfcHelper.setAndroidBeam(this, getApplication().getPackageName());
         checkForAddRepoIntent(getIntent());
+
+        /// to user multiple filters
+//        IntentFilter filterTokenRefresh = new IntentFilter();
+//        filterTokenRefresh.addAction("fdroidclient.iris.com.fdroiddongle.services");
+//        filterTokenRefresh.addAction("fdroidclient.iris.com.fdroidtablet.services");
+
+        registerReceiver(tokenReceiver, new IntentFilter(
+                "fdroidclient.iris.com.fdroiddongle"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(tokenReceiver);
     }
 
     @Override
