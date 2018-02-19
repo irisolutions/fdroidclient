@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "977569113489",
+    "firebase_url": "https://fdroidclientdlongle.firebaseio.com",
+    "project_id": "fdroidclientdlongle",
+    "storage_bucket": "fdroidclientdlongle.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977569113489:android:d285fc7e58a99444",
+        "android_client_info": {
+          "package_name": "fdroidclient.iris.com.fdroiddongle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977569113489-bjrhg2fprvc4adr4fu4kbcsshe50cqc7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fdroidclient.iris.com.fdroiddongle",
+            "certificate_hash": "85186f80748e1c6843fab6ffa11f41fc91c9a31b"
+          }
+        },
+        {
+          "client_id": "977569113489-n95tr5br0iudlju38f1oh7tk8rq2vn8u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATx8eJahf0F2CdReIStAkgSuxxoHBjXSw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977569113489-n95tr5br0iudlju38f1oh7tk8rq2vn8u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

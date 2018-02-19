@@ -313,8 +313,6 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         int i = item.getItemId();
         if (i == R.id.action_iris_login) {
             startActivity(new Intent(this, IrisLogin.class));
-
-
             UpdateService.updateNow(this);
             return true;
         } else if (i == R.id.action_update_repo) {

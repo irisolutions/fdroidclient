@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "219227114282",
+    "firebase_url": "https://fdroidclienttablet.firebaseio.com",
+    "project_id": "fdroidclienttablet",
+    "storage_bucket": "fdroidclienttablet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219227114282:android:316bcc5cb3f135c4",
+        "android_client_info": {
+          "package_name": "fdroidclient.iris.com.fdroidtablet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219227114282-j66nkmji4cc547r6o3117g6s6ephvakq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fdroidclient.iris.com.fdroidtablet",
+            "certificate_hash": "85186f80748e1c6843fab6ffa11f41fc91c9a31b"
+          }
+        },
+        {
+          "client_id": "219227114282-k3ifu320sk0tns214u8tdrvs7v3b3nk1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATxz0se9CDQF0SgBh8X78jhI-ARkdVpUE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219227114282-k3ifu320sk0tns214u8tdrvs7v3b3nk1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
