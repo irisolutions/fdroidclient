@@ -49,7 +49,7 @@ import org.fdroid.fdroid.compat.TabManager;
 import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
-import org.fdroid.fdroid.receiver.TokenReciver;
+import org.fdroid.fdroid.receiver.TokenReceiver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
@@ -68,6 +68,8 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     private static final String ACTION_ADD_REPO = "org.fdroid.fdroid.FDroid.ACTION_ADD_REPO";
 
     private static final String ADD_REPO_INTENT_HANDLED = "addRepoIntentHandled";
+    public static final String DONGLE_SERVICE_ACTION = "fdroidclient.iris.com.fdroiddongle.services";
+    public static final String TABLET_SERVICE_ACTION = "fdroidclient.iris.com.fdroidtablet.services";
 
     private FDroidApp fdroidApp;
 
@@ -86,7 +88,7 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     @Nullable
     private String pendingSearchQuery;
 
-    private TokenReciver tokenReceiver = new TokenReciver();
+    private TokenReceiver tokenReceiver = new TokenReceiver();
    /* private BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
 
         @Override
@@ -165,13 +167,11 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         NfcHelper.setAndroidBeam(this, getApplication().getPackageName());
         checkForAddRepoIntent(getIntent());
 
-        /// to user multiple filters
-//        IntentFilter filterTokenRefresh = new IntentFilter();
-//        filterTokenRefresh.addAction("fdroidclient.iris.com.fdroiddongle.services");
-//        filterTokenRefresh.addAction("fdroidclient.iris.com.fdroidtablet.services");
+        IntentFilter filterTokenRefresh = new IntentFilter();
+        filterTokenRefresh.addAction(DONGLE_SERVICE_ACTION);
+        filterTokenRefresh.addAction(TABLET_SERVICE_ACTION);
+        registerReceiver(tokenReceiver, filterTokenRefresh);
 
-        registerReceiver(tokenReceiver, new IntentFilter(
-                "fdroidclient.iris.com.fdroiddongle"));
     }
 
     @Override

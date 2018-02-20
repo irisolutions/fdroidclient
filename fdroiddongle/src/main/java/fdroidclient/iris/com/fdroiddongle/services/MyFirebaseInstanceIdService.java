@@ -17,7 +17,7 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
     private static final String TAG = "MyFirebaseIdService";
     private static final String TOPIC_GLOBAL = "global";
     public static final String TOKEN = "token";
-    public static final String NOTIFICATION = "fdroidclient.iris.com.fdroiddongle";
+    public static final String NOTIFICATION = "fdroidclient.iris.com.fdroiddongle.services";
     private static final String TYPE = "type";
     public static final String DONGLE = "dongle";
 

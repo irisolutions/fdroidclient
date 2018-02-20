@@ -1,5 +1,6 @@
 package fdroidclient.iris.com.fdroidtablet.services;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -15,6 +16,10 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
     private static final String TAG = "MyFirebaseIdService";
     private static final String TOPIC_GLOBAL = "global";
+    public static final String TOKEN = "token";
+    public static final String NOTIFICATION = "fdroidclient.iris.com.fdroidtablet.services";
+    private static final String TYPE = "type";
+    public static final String TABLET = "tablet";
 
     @Override
     public void onTokenRefresh() {
@@ -29,7 +34,15 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
 
+        sendTokenToBroadcast(refreshedToken);
         sendRegistrationToServer(refreshedToken);
+    }
+
+    private void sendTokenToBroadcast(String token) {
+        Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(TOKEN, token);
+        intent.putExtra(TYPE, TABLET);
+        sendBroadcast(intent);
     }
 
     /**
@@ -42,7 +55,6 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
-
 
 
 //        Subscribe the user to “global” topic so that you can send notifications to all the apps

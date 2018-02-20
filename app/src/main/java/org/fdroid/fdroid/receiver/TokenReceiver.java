@@ -13,8 +13,8 @@ import org.fdroid.fdroid.Preferences;
  * Descriptions
  */
 
-public class TokenReciver extends BroadcastReceiver {
-    private static final String TAG = TokenReciver.class.getName();
+public class TokenReceiver extends BroadcastReceiver {
+    private static final String TAG = TokenReceiver.class.getName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
