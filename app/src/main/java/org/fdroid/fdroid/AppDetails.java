@@ -94,6 +94,7 @@ import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
+import org.fdroid.fdroid.net.PushDownloadNotification;
 import org.fdroid.fdroid.privileged.views.AppDiff;
 import org.fdroid.fdroid.privileged.views.AppSecurityPermissions;
 
@@ -870,6 +871,7 @@ public class AppDetails extends AppCompatActivity {
                 if (app.suggestedVersionCode > 0) {
                     final Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(this, app.packageName, app.suggestedVersionCode);
                     install(apkToInstall);
+                    PushDownloadNotification.pushAppIDNotification(app.packageName);
                 }
                 return true;
 
@@ -1670,6 +1672,7 @@ public class AppDetails extends AppCompatActivity {
             public void onClick(View v) {
                 App app = appDetails.getApp();
                 AppDetails activity = (AppDetails) getActivity();
+                PushDownloadNotification.pushAppIDNotification(app.packageName);
                 if (updateWanted && app.suggestedVersionCode > 0) {
                     Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(activity, app.packageName, app.suggestedVersionCode);
                     activity.install(apkToInstall);

@@ -129,8 +129,7 @@ public class IrisLogin extends AppCompatActivity {
 
         HashMap<String, String> params = new HashMap<>();
         params.put("Token", Preferences.get().getPrefFCMToken());
-        // TODO: 2/21/2018 change email or username
-        params.put("Email", "khalid@iris.ps");
+        params.put("UserName", Preferences.get().getPrefUsername());
         params.put("Type", Preferences.get().getPrefDeviceType());
 
         String url = "http://192.168.1.101:8000/dashboard/command/addNewToken";
