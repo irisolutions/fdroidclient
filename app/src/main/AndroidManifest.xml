@@ -429,6 +429,14 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".receiver.TokenReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="fdroidclient.iris.com.fdroiddongle.services" />
+                <action android:name="fdroidclient.iris.com.fdroidtablet.services" />
+            </intent-filter>
+        </receiver>
         <!-- Note: AppThemeTransparent, this activity shows dialogs only -->
         <activity
             android:name=".installer.DefaultInstallerActivity"
@@ -450,7 +458,6 @@
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_CHANGED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
-
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>

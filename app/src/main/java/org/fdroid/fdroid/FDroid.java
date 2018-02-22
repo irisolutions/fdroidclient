@@ -49,7 +49,6 @@ import org.fdroid.fdroid.compat.TabManager;
 import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
-import org.fdroid.fdroid.receiver.TokenReceiver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
@@ -88,7 +87,7 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     @Nullable
     private String pendingSearchQuery;
 
-    private TokenReceiver tokenReceiver = new TokenReceiver();
+//    private TokenReceiver tokenReceiver = new TokenReceiver();
    /* private BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
 
         @Override
@@ -170,14 +169,14 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         IntentFilter filterTokenRefresh = new IntentFilter();
         filterTokenRefresh.addAction(DONGLE_SERVICE_ACTION);
         filterTokenRefresh.addAction(TABLET_SERVICE_ACTION);
-        registerReceiver(tokenReceiver, filterTokenRefresh);
+//        registerReceiver(tokenReceiver, filterTokenRefresh);
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(tokenReceiver);
+//        unregisterReceiver(tokenReceiver);
     }
 
     @Override

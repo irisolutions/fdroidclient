@@ -20,6 +20,8 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
     public static final String NOTIFICATION = "fdroidclient.iris.com.fdroidtablet.services";
     private static final String TYPE = "type";
     public static final String TABLET = "tablet";
+    private static final String RESULT_CODE = "RESULT_CODE";
+    private static final int TOKEN_CODE = 1250;
 
     @Override
     public void onTokenRefresh() {
@@ -40,6 +42,7 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
 
     private void sendTokenToBroadcast(String token) {
         Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(RESULT_CODE, TOKEN_CODE);
         intent.putExtra(TOKEN, token);
         intent.putExtra(TYPE, TABLET);
         sendBroadcast(intent);

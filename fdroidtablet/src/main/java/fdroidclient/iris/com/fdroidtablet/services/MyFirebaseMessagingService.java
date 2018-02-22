@@ -27,6 +27,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String ACTION = "action";
     private static final String DATA = "data";
     private static final String ACTION_DESTINATION = "action_destination";
+    private static final String NOTIFICATION = "fdroidclient.iris.com.fdroidtablet.services";
+    private static final String RESULT_CODE = "RESULT_CODE";
+    private static final int MSG_CODE = 1251;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -42,8 +45,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } else if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             handleNotification(remoteMessage.getNotification());
+            sendTokenToBroadcast(remoteMessage.getNotification());
         }// Check if message contains a notification payload.
 
+    }
+
+    private void sendTokenToBroadcast(RemoteMessage.Notification RemoteMsgNotification) {
+        String message = RemoteMsgNotification.getBody();
+        String title = RemoteMsgNotification.getTitle();
+        Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(RESULT_CODE, MSG_CODE);
+        intent.putExtra(MESSAGE, message);
+        intent.putExtra(TITLE, title);
+        sendBroadcast(intent);
     }
 
     private void handleNotification(RemoteMessage.Notification RemoteMsgNotification) {
