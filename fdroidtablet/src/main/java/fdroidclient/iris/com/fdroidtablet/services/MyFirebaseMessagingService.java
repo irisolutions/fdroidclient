@@ -91,6 +91,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
         notificationUtils.displayNotification(notificationObject, resultIntent);
         notificationUtils.playNotificationSound();
-
     }
 }

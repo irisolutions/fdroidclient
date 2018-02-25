@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.fdroid.fdroid.Preferences;
+import org.fdroid.fdroid.UpdateService;
 
 /**
  * Created by Khaled on 2/19/2018.
@@ -33,14 +35,28 @@ public class TokenReceiver extends BroadcastReceiver {
                 Preferences.get().setPrefFCMToken(token);
                 Preferences.get().setPrefDeviceType(type);
                 Log.d(TAG, "onReceive: Token received" + token);
+                Toast.makeText(context, "Token received" + token, Toast.LENGTH_SHORT).show();
             } else if (resultCode == MSG_CODE) {
                 String message = bundle.getString(MESSAGE);
                 String title = bundle.getString(TITLE);
                 Log.d(TAG, "onReceive: message received" + message);
                 Log.d(TAG, "onReceive: title received" + title);
+                Toast.makeText(context, "Message received" + title + "\n" + message, Toast.LENGTH_SHORT).show();
+
+                startService(context, message, title);
+
+
             } else {
                 Log.d(TAG, "onReceive: no bundles");
             }
         }
     }
+
+    private void startService(Context context, String message, String title) {
+        Intent intent = new Intent(context, UpdateService.class);
+        intent.putExtra(MESSAGE, message);
+        intent.putExtra(TITLE, title);
+        context.startService(intent);
+    }
+
 }

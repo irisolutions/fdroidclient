@@ -1672,7 +1672,10 @@ public class AppDetails extends AppCompatActivity {
             public void onClick(View v) {
                 App app = appDetails.getApp();
                 AppDetails activity = (AppDetails) getActivity();
+
+                // TODO: 2/22/2018 push notification if the app for other device (tablet/dongle)
                 PushDownloadNotification.pushAppIDNotification(app.packageName);
+                
                 if (updateWanted && app.suggestedVersionCode > 0) {
                     Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(activity, app.packageName, app.suggestedVersionCode);
                     activity.install(apkToInstall);
