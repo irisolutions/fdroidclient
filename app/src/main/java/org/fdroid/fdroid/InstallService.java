@@ -28,16 +28,15 @@ public class InstallService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-                String token = bundle.getString("token");
-                String type = bundle.getString("type");
-                Preferences.get().setPrefFCMToken(token);
-                Preferences.get().setPrefDeviceType(type);
-                Log.d(TAG, "onReceive: Token received" + token);
+                String message = bundle.getString("message");
+                String title= bundle.getString("title");
+                Log.d(TAG, "onReceive: Token received" + message);
+                showToast(message,title);
             }
         }
 
 
-    private void showToast() {
+    private void showToast(final String message, final String title) {
         if (toastHandler == null) {
             toastHandler = new Handler(Looper.getMainLooper());
         }
@@ -45,7 +44,7 @@ public class InstallService extends IntentService {
             @Override
             public void run() {
                 Toast.makeText(getApplicationContext(),
-                        "Install services", Toast.LENGTH_SHORT).show();
+                        "Install services" +message+"\n" +title, Toast.LENGTH_SHORT).show();
             }
         });
     }

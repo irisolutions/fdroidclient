@@ -22,7 +22,7 @@ public class PushDownloadNotification {
         params.put("Type", Preferences.get().getPrefDeviceType());
         params.put("UserName", Preferences.get().getPrefUsername());
 
-        String url = "http://192.168.1.101:8000/dashboard/command/pushDownloadNotification";
+        String url = "http://192.168.1.39:8000/dashboard/command/pushDownloadNotification";
 
         PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url,params,CODE_POST_REQUEST);
         performNetworkRequest.execute();

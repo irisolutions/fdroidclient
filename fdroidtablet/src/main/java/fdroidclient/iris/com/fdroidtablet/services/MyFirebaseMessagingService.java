@@ -44,15 +44,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         } else if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            String message = remoteMessage.getNotification().getBody();
+            String title = remoteMessage.getNotification().getTitle();
+            sendTokenToBroadcast(message, title);
             handleNotification(remoteMessage.getNotification());
-            sendTokenToBroadcast(remoteMessage.getNotification());
         }// Check if message contains a notification payload.
 
     }
 
-    private void sendTokenToBroadcast(RemoteMessage.Notification RemoteMsgNotification) {
-        String message = RemoteMsgNotification.getBody();
-        String title = RemoteMsgNotification.getTitle();
+    private void sendTokenToBroadcast(String message, String title) {
         Intent intent = new Intent(NOTIFICATION);
         intent.putExtra(RESULT_CODE, MSG_CODE);
         intent.putExtra(MESSAGE, message);
@@ -85,6 +85,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationObject.setIconUrl(iconUrl);
         notificationObject.setAction(action);
         notificationObject.setActionDestination(actionDestination);
+
+        sendTokenToBroadcast(message, title);
 
         Intent resultIntent = new Intent(getApplicationContext(), FDroidTablet.class);
 

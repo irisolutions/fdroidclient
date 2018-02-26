@@ -25,6 +25,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -48,6 +49,7 @@ import org.fdroid.fdroid.compat.TabManager;
 import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
+import org.fdroid.fdroid.receiver.TokenReceiver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
@@ -83,6 +85,28 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
 
     @Nullable
     private String pendingSearchQuery;
+    public static final String DONGLE_SERVICE_ACTION = "fdroidclient.iris.com.fdroiddongle.services";
+    public static final String TABLET_SERVICE_ACTION = "fdroidclient.iris.com.fdroidtablet.services";
+
+
+    private TokenReceiver tokenReceiver = new TokenReceiver();
+  /*  private BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                String token = bundle.getString("token");
+                String type = bundle.getString("type");
+
+                Preferences.get().setPrefFCMToken(token);
+                Preferences.get().setPrefDeviceType(type);
+
+                Toast.makeText(FDroid.this, token +"" +"\n"+type,
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    };*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,12 +166,19 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         FDroidApp.checkStartTor(this);
         // AppDetails and RepoDetailsActivity set different NFC actions, so reset here
         NfcHelper.setAndroidBeam(this, getApplication().getPackageName());
+
+        IntentFilter filterTokenRefresh = new IntentFilter();
+        filterTokenRefresh.addAction(DONGLE_SERVICE_ACTION);
+        filterTokenRefresh.addAction(DONGLE_SERVICE_ACTION);
+        filterTokenRefresh.addAction(TABLET_SERVICE_ACTION);
+        registerReceiver(tokenReceiver, filterTokenRefresh);
         checkForAddRepoIntent(getIntent());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
     }
 
     @Override

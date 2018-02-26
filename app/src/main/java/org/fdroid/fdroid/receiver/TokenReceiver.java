@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.fdroid.fdroid.InstallService;
 import org.fdroid.fdroid.Preferences;
-import org.fdroid.fdroid.UpdateService;
 
 /**
  * Created by Khaled on 2/19/2018.
@@ -27,6 +27,7 @@ public class TokenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
+        Log.d(TAG, "onReceive: receive message from FCM");
         if (bundle != null) {
             int resultCode = bundle.getInt(RESULT_CODE);
             if (resultCode == TOKEN_CODE) {
@@ -42,10 +43,7 @@ public class TokenReceiver extends BroadcastReceiver {
                 Log.d(TAG, "onReceive: message received" + message);
                 Log.d(TAG, "onReceive: title received" + title);
                 Toast.makeText(context, "Message received" + title + "\n" + message, Toast.LENGTH_SHORT).show();
-
                 startService(context, message, title);
-
-
             } else {
                 Log.d(TAG, "onReceive: no bundles");
             }
@@ -53,7 +51,7 @@ public class TokenReceiver extends BroadcastReceiver {
     }
 
     private void startService(Context context, String message, String title) {
-        Intent intent = new Intent(context, UpdateService.class);
+        Intent intent = new Intent(context, InstallService.class);
         intent.putExtra(MESSAGE, message);
         intent.putExtra(TITLE, title);
         context.startService(intent);

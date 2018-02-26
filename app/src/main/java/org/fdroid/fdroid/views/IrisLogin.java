@@ -114,8 +114,6 @@ public class IrisLogin extends AppCompatActivity {
 
                             UpdateService.updateNow(getBaseContext());
 
-
-
                             // trigger an update
                             finish();
 
@@ -132,7 +130,7 @@ public class IrisLogin extends AppCompatActivity {
         params.put("UserName", Preferences.get().getPrefUsername());
         params.put("Type", Preferences.get().getPrefDeviceType());
 
-        String url = "http://192.168.1.101:8000/dashboard/command/addNewToken";
+        String url = "http://192.168.1.39:8000/dashboard/command/addNewToken";
 
         PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url,params,CODE_POST_REQUEST);
         performNetworkRequest.execute();
