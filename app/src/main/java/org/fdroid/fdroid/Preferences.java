@@ -356,9 +356,8 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
         if ( user.isEmpty() || pass.isEmpty())
             return null;
 
-        String host    = "http://34.209.162.150";
+        String host    = "http://54.89.24.164";
         String baseUrl = "IrisCentral/web/app_dev.php/dashboard/command/appList";
-        //return "http://34.209.162.150/applist.txt";
 
         // ToDo: use password as well
         return host+"/" + baseUrl + "/" + user;
