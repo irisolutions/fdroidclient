@@ -26,12 +26,14 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -84,10 +86,12 @@ import org.fdroid.fdroid.data.App;
 import org.fdroid.fdroid.data.AppPrefs;
 import org.fdroid.fdroid.data.AppPrefsProvider;
 import org.fdroid.fdroid.data.AppProvider;
+import org.fdroid.fdroid.data.ApplicationSyncProvider;
 import org.fdroid.fdroid.data.InstalledApp;
 import org.fdroid.fdroid.data.InstalledAppProvider;
 import org.fdroid.fdroid.data.RepoProvider;
 import org.fdroid.fdroid.data.Schema;
+import org.fdroid.fdroid.data.Schema.ApplicationSyncTable;
 import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
@@ -99,6 +103,8 @@ import org.fdroid.fdroid.privileged.views.AppDiff;
 import org.fdroid.fdroid.privileged.views.AppSecurityPermissions;
 
 import java.util.List;
+
+//import org.fdroid.fdroid.data.Schema;
 
 public class AppDetails extends AppCompatActivity {
 
@@ -368,6 +374,9 @@ public class AppDetails extends AppCompatActivity {
         fdroidApp.applyTheme(this);
 
         super.onCreate(savedInstanceState);
+
+        // just to test content provider
+//         insertContentProvider();
 
         // Must be called *after* super.onCreate(), as that is where the action bar
         // compat implementation is assigned in the ActionBarActivity base class.
@@ -1674,8 +1683,8 @@ public class AppDetails extends AppCompatActivity {
                 AppDetails activity = (AppDetails) getActivity();
 
                 // TODO: 2/22/2018 push notification if the app for other device (tablet/dongle)
-                PushDownloadNotification.pushAppIDNotification(app.packageName);
-                
+//                PushDownloadNotification.pushAppIDNotification(app.packageName);
+
                 if (updateWanted && app.suggestedVersionCode > 0) {
                     Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(activity, app.packageName, app.suggestedVersionCode);
                     activity.install(apkToInstall);
@@ -1698,8 +1707,48 @@ public class AppDetails extends AppCompatActivity {
                 }
             }
         };
+
     }
 
+    private void insertContentProvider() {
+        // Create caseUIHandler ContentValues object where column names are the keys,
+        // and test attributes from the editor are the values.
+        ContentValues values = new ContentValues();
+        values.put(ApplicationSyncTable.Cols.APP_ID, "com.khaled.test");
+        values.put(ApplicationSyncTable.Cols.TYPE, "tablet");
+        values.put(ApplicationSyncTable.Cols.DONGLE_VERSION, "1.2");
+        values.put(ApplicationSyncTable.Cols.TABLET_VERSION, "1.9.9");
+
+        Uri newUri = getContentResolver().insert(ApplicationSyncProvider.getAllApps(), values);
+
+        Toast.makeText(this, "insert to database",
+                Toast.LENGTH_SHORT).show();
+
+        readFromContentProvider();
+    }
+
+    private void readFromContentProvider() {
+        String[] projection = new String[]{ApplicationSyncTable.Cols.APP_ID,ApplicationSyncTable.Cols.TYPE
+        ,ApplicationSyncTable.Cols.DONGLE_VERSION,ApplicationSyncTable.Cols.TABLET_VERSION};
+        Cursor cursor = getContentResolver().query(ApplicationSyncProvider.getAllApps(),
+                projection,
+                null,
+                null,
+                null);
+        Log.d(TAG, "readFromContentProvider: data from content provider  -----------------------------------");
+        if (cursor.moveToFirst()) {
+            do {
+//                long id = cursor.getLong(0);
+                String appId = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.APP_ID));
+                String type = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.TYPE));
+                String tabletVersion = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.TABLET_VERSION));
+                String dongleVersion = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.DONGLE_VERSION));
+                Log.d(TAG, "readFromContentProvider: "+"\n"+appId+"\n"+type+"\n"+tabletVersion+"\n"+dongleVersion+"\n");
+                // do something meaningful
+            } while (cursor.moveToNext());
+        }
+        Log.d(TAG, "readFromContentProvider: -----------------------------------------------------------");
+    }
     public static class AppDetailsListFragment extends ListFragment {
 
         private static final String SUMMARY_TAG = "summary";

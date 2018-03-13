@@ -12,11 +12,11 @@ public interface Schema {
     /**
      * A package is essentially the app that a developer builds and wants you to install on your
      * device. It differs from entries in:
-     *  * {@link ApkTable} because they are specific builds of a particular package. Many different
-     *    builds of the same package can exist.
-     *  * {@link AppMetadataTable} because this is metdata about a package which is specified by a
-     *    given repo. Different repos can provide the same package with different descriptions,
-     *    categories, etc.
+     * * {@link ApkTable} because they are specific builds of a particular package. Many different
+     * builds of the same package can exist.
+     * * {@link AppMetadataTable} because this is metdata about a package which is specified by a
+     * given repo. Different repos can provide the same package with different descriptions,
+     * categories, etc.
      */
     interface PackageTable {
 
@@ -77,6 +77,7 @@ public interface Schema {
      * An entry in this table signifies that an app is in a particular category. Each repo can
      * classify its apps in separate categories, and so the same record in {@link PackageTable}
      * can be in the same category multiple times, if multiple repos think that is the case.
+     *
      * @see CategoryTable
      * @see AppMetadataTable
      */
@@ -87,12 +88,14 @@ public interface Schema {
         interface Cols {
             /**
              * Foreign key to {@link AppMetadataTable}.
+             *
              * @see AppMetadataTable
              */
             String APP_METADATA_ID = "appMetadataId";
 
             /**
              * Foreign key to {@link CategoryTable}.
+             *
              * @see CategoryTable
              */
             String CATEGORY_ID = "categoryId";
@@ -186,6 +189,7 @@ public interface Schema {
             /**
              * Superset of {@link Cols#ALL_COLS} including fields from other tables and also an alias
              * to satisfy the Android requirement for an "_ID" field.
+             *
              * @see Cols#ALL_COLS
              */
             String[] ALL = {
@@ -216,29 +220,29 @@ public interface Schema {
             /**
              * Foreign key to the {@link AppMetadataTable}.
              */
-            String APP_ID          = "appId";
-            String ROW_ID          = "rowid";
-            String VERSION_NAME    = "version";
-            String REPO_ID         = "repo";
-            String HASH            = "hash";
-            String VERSION_CODE    = "vercode";
-            String NAME            = "apkName";
-            String SIZE            = "size";
-            String SIGNATURE       = "sig";
-            String SOURCE_NAME     = "srcname";
+            String APP_ID = "appId";
+            String ROW_ID = "rowid";
+            String VERSION_NAME = "version";
+            String REPO_ID = "repo";
+            String HASH = "hash";
+            String VERSION_CODE = "vercode";
+            String NAME = "apkName";
+            String SIZE = "size";
+            String SIGNATURE = "sig";
+            String SOURCE_NAME = "srcname";
             String MIN_SDK_VERSION = "minSdkVersion";
             String TARGET_SDK_VERSION = "targetSdkVersion";
             String MAX_SDK_VERSION = "maxSdkVersion";
-            String OBB_MAIN_FILE   = "obbMainFile";
+            String OBB_MAIN_FILE = "obbMainFile";
             String OBB_MAIN_FILE_SHA256 = "obbMainFileSha256";
-            String OBB_PATCH_FILE  = "obbPatchFile";
+            String OBB_PATCH_FILE = "obbPatchFile";
             String OBB_PATCH_FILE_SHA256 = "obbPatchFileSha256";
             String REQUESTED_PERMISSIONS = "permissions";
-            String FEATURES        = "features";
-            String NATIVE_CODE     = "nativecode";
-            String HASH_TYPE       = "hashType";
-            String ADDED_DATE      = "added";
-            String IS_COMPATIBLE   = "compatible";
+            String FEATURES = "features";
+            String NATIVE_CODE = "nativecode";
+            String HASH_TYPE = "hashType";
+            String ADDED_DATE = "added";
+            String IS_COMPATIBLE = "compatible";
             String INCOMPATIBLE_REASONS = "incompatibleReasons";
 
             interface Repo {
@@ -280,21 +284,21 @@ public interface Schema {
 
         interface Cols extends BaseColumns {
 
-            String ADDRESS      = "address";
-            String NAME         = "name";
-            String DESCRIPTION  = "description";
-            String IN_USE       = "inuse";
-            String PRIORITY     = "priority";
+            String ADDRESS = "address";
+            String NAME = "name";
+            String DESCRIPTION = "description";
+            String IN_USE = "inuse";
+            String PRIORITY = "priority";
             String SIGNING_CERT = "pubkey";
-            String FINGERPRINT  = "fingerprint";
-            String MAX_AGE      = "maxage";
-            String LAST_ETAG    = "lastetag";
+            String FINGERPRINT = "fingerprint";
+            String MAX_AGE = "maxage";
+            String LAST_ETAG = "lastetag";
             String LAST_UPDATED = "lastUpdated";
-            String VERSION      = "version";
-            String IS_SWAP      = "isSwap";
-            String USERNAME     = "username";
-            String PASSWORD     = "password";
-            String TIMESTAMP    = "timestamp";
+            String VERSION = "version";
+            String IS_SWAP = "isSwap";
+            String USERNAME = "username";
+            String PASSWORD = "password";
+            String TIMESTAMP = "timestamp";
             String PUSH_REQUESTS = "pushRequests";
 
             String[] ALL = {
@@ -323,6 +327,23 @@ public interface Schema {
             String[] ALL = {
                     _ID, PACKAGE_NAME, VERSION_CODE, VERSION_NAME, APPLICATION_LABEL,
                     SIGNATURE, LAST_UPDATE_TIME, HASH_TYPE, HASH,
+            };
+        }
+    }
+
+    interface ApplicationSyncTable {
+
+        String NAME = "fdroid_applicationSync";
+
+        interface Cols {
+            String _ID = "rowid as _id"; // Required for CursorLoaders
+            String TYPE = "type";
+            String APP_ID = "appID";
+            String TABLET_VERSION = "tabletversion";
+            String DONGLE_VERSION = "dongleversion";
+
+            String[] ALL = {
+                    _ID, TYPE, APP_ID, TABLET_VERSION, DONGLE_VERSION,
             };
         }
     }

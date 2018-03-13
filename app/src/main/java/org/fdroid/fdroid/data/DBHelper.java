@@ -34,11 +34,12 @@ import android.util.Log;
 import org.fdroid.fdroid.R;
 import org.fdroid.fdroid.Utils;
 import org.fdroid.fdroid.data.Schema.ApkTable;
-import org.fdroid.fdroid.data.Schema.CatJoinTable;
-import org.fdroid.fdroid.data.Schema.PackageTable;
-import org.fdroid.fdroid.data.Schema.AppPrefsTable;
 import org.fdroid.fdroid.data.Schema.AppMetadataTable;
+import org.fdroid.fdroid.data.Schema.AppPrefsTable;
+import org.fdroid.fdroid.data.Schema.CatJoinTable;
 import org.fdroid.fdroid.data.Schema.InstalledAppTable;
+import org.fdroid.fdroid.data.Schema.ApplicationSyncTable;
+import org.fdroid.fdroid.data.Schema.PackageTable;
 import org.fdroid.fdroid.data.Schema.RepoTable;
 
 import java.util.ArrayList;
@@ -178,6 +179,14 @@ class DBHelper extends SQLiteOpenHelper {
             + InstalledAppTable.Cols.HASH + " TEXT NOT NULL"
             + " );";
 
+    private static final String CREATE_TABLE_APPLICATIONSYNC= "CREATE TABLE " + ApplicationSyncTable.NAME
+            + " ( "
+            + ApplicationSyncTable.Cols.TYPE+ " TEXT NOT NULL, "
+            + ApplicationSyncTable.Cols.APP_ID + " TEXT NOT NULL, "
+            + ApplicationSyncTable.Cols.TABLET_VERSION + " TEXT NOT NULL, "
+            + ApplicationSyncTable.Cols.DONGLE_VERSION+ " TEXT NOT NULL "
+            + " );";
+
     protected static final int DB_VERSION = 65;
 
     private final Context context;
@@ -198,6 +207,7 @@ class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_INSTALLED_APP);
         db.execSQL(CREATE_TABLE_REPO);
         db.execSQL(CREATE_TABLE_APP_PREFS);
+        db.execSQL(CREATE_TABLE_APPLICATIONSYNC);
         ensureIndexes(db);
 
         String[] defaultRepos = context.getResources().getStringArray(R.array.default_repos);
