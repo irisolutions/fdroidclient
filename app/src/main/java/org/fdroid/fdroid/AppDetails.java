@@ -86,12 +86,12 @@ import org.fdroid.fdroid.data.App;
 import org.fdroid.fdroid.data.AppPrefs;
 import org.fdroid.fdroid.data.AppPrefsProvider;
 import org.fdroid.fdroid.data.AppProvider;
-import org.fdroid.fdroid.data.ApplicationSyncProvider;
+import org.fdroid.fdroid.data.ApplicatioTypeProvider;
 import org.fdroid.fdroid.data.InstalledApp;
 import org.fdroid.fdroid.data.InstalledAppProvider;
 import org.fdroid.fdroid.data.RepoProvider;
 import org.fdroid.fdroid.data.Schema;
-import org.fdroid.fdroid.data.Schema.ApplicationSyncTable;
+import org.fdroid.fdroid.data.Schema.ApplicationTypeTable;
 import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
@@ -1713,13 +1713,23 @@ public class AppDetails extends AppCompatActivity {
     private void insertContentProvider() {
         // Create caseUIHandler ContentValues object where column names are the keys,
         // and test attributes from the editor are the values.
-        ContentValues values = new ContentValues();
-        values.put(ApplicationSyncTable.Cols.APP_ID, "com.khaled.test");
-        values.put(ApplicationSyncTable.Cols.TYPE, "tablet");
-        values.put(ApplicationSyncTable.Cols.DONGLE_VERSION, "1.2");
-        values.put(ApplicationSyncTable.Cols.TABLET_VERSION, "1.9.9");
+       /* ContentValues values = new ContentValues();
+        values.put(ApplicationSyncTable.Cols.CONTROLLER_ID, "com.khaled.test");
+        values.put(ApplicationSyncTable.Cols.CONTROLLER_VERSION, "1.02");
+        values.put(ApplicationSyncTable.Cols.DONGLE_ID, "com.khaled.dongle");
+        values.put(ApplicationSyncTable.Cols.DONGLE_VERSION, "1.9.9");
 
         Uri newUri = getContentResolver().insert(ApplicationSyncProvider.getAllApps(), values);
+
+        Toast.makeText(this, "insert to database",
+                Toast.LENGTH_SHORT).show();*/
+        ContentValues values = new ContentValues();
+        values.put(ApplicationTypeTable.Cols.PACKAGE_NAME, "com.khaled.test");
+        values.put(ApplicationTypeTable.Cols.APP_NAME, "TestAndroid");
+        values.put(ApplicationTypeTable.Cols.PRICE, "120");
+        values.put(ApplicationTypeTable.Cols.TYPE, "tablet");
+
+        Uri newUri = getContentResolver().insert(ApplicatioTypeProvider.getAllApps(), values);
 
         Toast.makeText(this, "insert to database",
                 Toast.LENGTH_SHORT).show();
@@ -1728,8 +1738,8 @@ public class AppDetails extends AppCompatActivity {
     }
 
     private void readFromContentProvider() {
-        String[] projection = new String[]{ApplicationSyncTable.Cols.APP_ID,ApplicationSyncTable.Cols.TYPE
-        ,ApplicationSyncTable.Cols.DONGLE_VERSION,ApplicationSyncTable.Cols.TABLET_VERSION};
+      /*  String[] projection = new String[]{ApplicationSyncTable.Cols.CONTROLLER_VERSION,ApplicationSyncTable.Cols.CONTROLLER_ID
+        ,ApplicationSyncTable.Cols.DONGLE_ID,ApplicationSyncTable.Cols.DONGLE_VERSION};
         Cursor cursor = getContentResolver().query(ApplicationSyncProvider.getAllApps(),
                 projection,
                 null,
@@ -1739,10 +1749,31 @@ public class AppDetails extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             do {
 //                long id = cursor.getLong(0);
-                String appId = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.APP_ID));
-                String type = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.TYPE));
-                String tabletVersion = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.TABLET_VERSION));
+                String appId = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.CONTROLLER_ID));
+                String type = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.CONTROLLER_VERSION));
+                String tabletVersion = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.DONGLE_ID));
                 String dongleVersion = cursor.getString(cursor.getColumnIndex(ApplicationSyncTable.Cols.DONGLE_VERSION));
+                Log.d(TAG, "readFromContentProvider: "+"\n"+appId+"\n"+type+"\n"+tabletVersion+"\n"+dongleVersion+"\n");
+                // do something meaningful
+            } while (cursor.moveToNext());
+        }
+        Log.d(TAG, "readFromContentProvider: -----------------------------------------------------------");*/
+//------------------------------------------------------------------------------------------------------
+        String[] projection = new String[]{ApplicationTypeTable.Cols.PACKAGE_NAME,ApplicationTypeTable.Cols.APP_NAME
+                ,ApplicationTypeTable.Cols.PRICE,ApplicationTypeTable.Cols.TYPE};
+        Cursor cursor  = getContentResolver().query(ApplicatioTypeProvider.getAllApps(),
+                projection,
+                null,
+                null,
+                null);
+        Log.d(TAG, "readFromContentProvider: data from content provider  -----------------------------------");
+        if (cursor.moveToFirst()) {
+            do {
+//                long id = cursor.getLong(0);
+                String appId = cursor.getString(cursor.getColumnIndex(ApplicationTypeTable.Cols.PACKAGE_NAME));
+                String type = cursor.getString(cursor.getColumnIndex(ApplicationTypeTable.Cols.APP_NAME));
+                String tabletVersion = cursor.getString(cursor.getColumnIndex(ApplicationTypeTable.Cols.PRICE));
+                String dongleVersion = cursor.getString(cursor.getColumnIndex(ApplicationTypeTable.Cols.TYPE));
                 Log.d(TAG, "readFromContentProvider: "+"\n"+appId+"\n"+type+"\n"+tabletVersion+"\n"+dongleVersion+"\n");
                 // do something meaningful
             } while (cursor.moveToNext());

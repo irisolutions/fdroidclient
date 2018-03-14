@@ -104,6 +104,10 @@
             android:authorities="org.fdroid.fdroid.data.ApplicationSyncProvider"
             android:exported="false" />
         <provider
+            android:name=".data.ApplicatioTypeProvider"
+            android:authorities="org.fdroid.fdroid.data.ApplicatioTypeProvider"
+            android:exported="false" />
+        <provider
             android:name=".installer.ApkFileProvider"
             android:authorities="org.fdroid.fdroid.installer.ApkFileProvider"
             android:exported="false"

@@ -46,7 +46,6 @@ import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 import org.apache.commons.net.util.SubnetUtils;
@@ -209,10 +208,10 @@ public class FDroidApp extends Application {
         }
         updateLanguage();
 
-        ACRA.init(this);
-        if (isAcraProcess()) {
-            return;
-        }
+//        ACRA.init(this);
+//        if (isAcraProcess()) {
+//            return;
+//        }
 
         PRNGFixes.apply();
 

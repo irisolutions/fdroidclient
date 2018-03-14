@@ -337,13 +337,30 @@ public interface Schema {
 
         interface Cols {
             String _ID = "rowid as _id"; // Required for CursorLoaders
-            String TYPE = "type";
-            String APP_ID = "appID";
-            String TABLET_VERSION = "tabletversion";
-            String DONGLE_VERSION = "dongleversion";
+            String CONTROLLER_ID = "ControllerID";
+            String CONTROLLER_VERSION = "ControllerVersion";
+            String DONGLE_ID = "DongleID";
+            String DONGLE_VERSION = "DongleVersion";
 
             String[] ALL = {
-                    _ID, TYPE, APP_ID, TABLET_VERSION, DONGLE_VERSION,
+                    _ID, CONTROLLER_ID, CONTROLLER_VERSION, DONGLE_ID, DONGLE_VERSION,
+            };
+        }
+    }
+
+    interface ApplicationTypeTable {
+
+        String NAME = "fdroid_applicationType";
+
+        interface Cols {
+            String _ID = "rowid as _id"; // Required for CursorLoaders
+            String PACKAGE_NAME = "ID";
+            String APP_NAME = "Name";
+            String PRICE = "Price";
+            String TYPE = "Type";
+
+            String[] ALL = {
+                    _ID, PACKAGE_NAME, APP_NAME, PRICE, TYPE,
             };
         }
     }

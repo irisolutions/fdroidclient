@@ -9,22 +9,22 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.fdroid.fdroid.data.Schema.ApplicationSyncTable;
+import org.fdroid.fdroid.data.Schema.ApplicationTypeTable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Khaled on 3/6/2018.
+ * Created by Khaled on 3/14/2018.
  * Assumptions
  * Descriptions
  */
 
-public class ApplicationSyncProvider extends FDroidProvider {
+public class ApplicatioTypeProvider extends FDroidProvider {
 
     private static final UriMatcher MATCHER = new UriMatcher(-1);
-    private static final String PROVIDER_NAME = ApplicationSyncProvider.class.getSimpleName();
+    private static final String PROVIDER_NAME = ApplicatioTypeProvider.class.getSimpleName();
 
     public static final int PATH_CODE = CODE_SINGLE + 1;
 
@@ -67,24 +67,18 @@ public class ApplicationSyncProvider extends FDroidProvider {
 
     @Override
     protected String getTableName() {
-        return ApplicationSyncTable.NAME;
+        return Schema.ApplicationTypeTable.NAME;
     }
 
     @Override
     protected String getProviderName() {
-        return ApplicationSyncProvider.class.getSimpleName();
+        return ApplicatioTypeProvider.class.getSimpleName();
     }
 
     @Override
     protected UriMatcher getMatcher() {
         return MATCHER;
     }
-
-  /*  protected QuerySelection querySingle(String appName) {
-        final String selection = getTableName() + "." + ApplicationSyncTable.Cols.APP_ID + " = ?";
-        final String[] args = {appName};
-        return new QuerySelection(selection, args);
-    }*/
 
     @Nullable
     @Override
@@ -93,7 +87,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
         switch (MATCHER.match(uri)) {
 
             case CODE_SINGLE:
-                customSelection = ApplicationSyncTable.Cols.CONTROLLER_ID + "=?";
+                customSelection = ApplicationTypeTable.Cols.PACKAGE_NAME + "=?";
                 selectionArgs = new String[]{String.valueOf(uri.getLastPathSegment())};
 
                 cursor = db().query(getTableName(), projection, customSelection, selectionArgs,
@@ -125,7 +119,6 @@ public class ApplicationSyncProvider extends FDroidProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
-
         switch (MATCHER.match(uri)) {
             case CODE_LIST:
                 return updateApplicationSyncTable(uri, contentValues, selection, selectionArgs);
@@ -133,7 +126,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
                 // For the TEST_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
-                selection = ApplicationSyncTable.Cols.CONTROLLER_ID + "=?";
+                selection = ApplicationTypeTable.Cols.PACKAGE_NAME+ "=?";
                 selectionArgs = new String[]{String.valueOf(uri.getLastPathSegment())};
                 return updateApplicationSyncTable(uri, contentValues, selection, selectionArgs);
             default:
@@ -144,8 +137,8 @@ public class ApplicationSyncProvider extends FDroidProvider {
     private int updateApplicationSyncTable(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         // If the {@link TestCaseEntry#COLUMN_TEST_NAME} key is present,
         // check that the name value is not null.
-        if (contentValues.containsKey(ApplicationSyncTable.Cols.CONTROLLER_ID)) {
-            String name = contentValues.getAsString(ApplicationSyncTable.Cols.CONTROLLER_ID);
+        if (contentValues.containsKey(ApplicationTypeTable.Cols.PACKAGE_NAME)) {
+            String name = contentValues.getAsString(ApplicationTypeTable.Cols.PACKAGE_NAME);
             if (name == null) {
                 throw new IllegalArgumentException("Test requires a name");
             }
@@ -158,7 +151,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
         }
 
         // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = db().update(ApplicationSyncTable.Cols.CONTROLLER_ID, contentValues, selection, selectionArgs);
+        int rowsUpdated = db().update(ApplicationTypeTable.Cols.PACKAGE_NAME, contentValues, selection, selectionArgs);
 
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
@@ -170,6 +163,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
         return rowsUpdated;
     }
 
+
     public static final class Helper {
         private Helper() {
         }
@@ -178,7 +172,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
             long id = getAppIdNum(context, app);
             if (id <= 0) {
                 ContentValues values = new ContentValues(1);
-                values.put(ApplicationSyncTable.Cols.CONTROLLER_ID, app);
+                values.put(ApplicationTypeTable.Cols.PACKAGE_NAME, app);
                 Uri uri = context.getContentResolver().insert(getContentUri(), values);
                 id = Long.parseLong(uri.getLastPathSegment());
             }
@@ -186,7 +180,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
         }
 
         public static long getAppIdNum(Context context, String app) {
-            String[] projection = new String[]{ApplicationSyncTable.Cols.CONTROLLER_ID};
+            String[] projection = new String[]{ApplicationTypeTable.Cols.PACKAGE_NAME};
             Cursor cursor = context.getContentResolver().query(getAppUri(app), projection, null, null, null);
             if (cursor == null) {
                 return 0;
@@ -197,7 +191,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
                     return 0;
                 } else {
                     cursor.moveToFirst();
-                    return cursor.getLong(cursor.getColumnIndexOrThrow(ApplicationSyncTable.Cols._ID));
+                    return cursor.getLong(cursor.getColumnIndexOrThrow(ApplicationTypeTable.Cols.PACKAGE_NAME));
                 }
             } finally {
                 cursor.close();
@@ -207,7 +201,7 @@ public class ApplicationSyncProvider extends FDroidProvider {
         public static List<String> apps(Context context) {
             final ContentResolver resolver = context.getContentResolver();
             final Uri uri = ApplicationSyncProvider.getAllApps();
-            final String[] projection = {ApplicationSyncTable.Cols.CONTROLLER_ID};
+            final String[] projection = {ApplicationTypeTable.Cols.PACKAGE_NAME};
             final Cursor cursor = resolver.query(uri, projection, null, null, null);
             List<String> apps = new ArrayList<>(30);
             if (cursor != null) {

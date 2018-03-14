@@ -39,6 +39,7 @@ import org.fdroid.fdroid.data.Schema.AppPrefsTable;
 import org.fdroid.fdroid.data.Schema.CatJoinTable;
 import org.fdroid.fdroid.data.Schema.InstalledAppTable;
 import org.fdroid.fdroid.data.Schema.ApplicationSyncTable;
+import org.fdroid.fdroid.data.Schema.ApplicationTypeTable;
 import org.fdroid.fdroid.data.Schema.PackageTable;
 import org.fdroid.fdroid.data.Schema.RepoTable;
 
@@ -82,31 +83,31 @@ class DBHelper extends SQLiteOpenHelper {
 
     static final String CREATE_TABLE_APK =
             "CREATE TABLE " + ApkTable.NAME + " ( "
-            + ApkTable.Cols.APP_ID + " integer not null, "
-            + ApkTable.Cols.VERSION_NAME + " text not null, "
-            + ApkTable.Cols.REPO_ID + " integer not null, "
-            + ApkTable.Cols.HASH + " text not null, "
-            + ApkTable.Cols.VERSION_CODE + " int not null,"
-            + ApkTable.Cols.NAME + " text not null, "
-            + ApkTable.Cols.SIZE + " int not null, "
-            + ApkTable.Cols.SIGNATURE + " string, "
-            + ApkTable.Cols.SOURCE_NAME + " string, "
-            + ApkTable.Cols.MIN_SDK_VERSION + " integer, "
-            + ApkTable.Cols.TARGET_SDK_VERSION + " integer, "
-            + ApkTable.Cols.MAX_SDK_VERSION + " integer, "
-            + ApkTable.Cols.OBB_MAIN_FILE + " string, "
-            + ApkTable.Cols.OBB_MAIN_FILE_SHA256 + " string, "
-            + ApkTable.Cols.OBB_PATCH_FILE + " string, "
-            + ApkTable.Cols.OBB_PATCH_FILE_SHA256 + " string, "
-            + ApkTable.Cols.REQUESTED_PERMISSIONS + " string, "
-            + ApkTable.Cols.FEATURES + " string, "
-            + ApkTable.Cols.NATIVE_CODE + " string, "
-            + ApkTable.Cols.HASH_TYPE + " string, "
-            + ApkTable.Cols.ADDED_DATE + " string, "
-            + ApkTable.Cols.IS_COMPATIBLE + " int not null, "
-            + ApkTable.Cols.INCOMPATIBLE_REASONS + " text, "
-            + "PRIMARY KEY (" + ApkTable.Cols.APP_ID + ", " + ApkTable.Cols.VERSION_CODE + ", " + ApkTable.Cols.REPO_ID + ")"
-            + ");";
+                    + ApkTable.Cols.APP_ID + " integer not null, "
+                    + ApkTable.Cols.VERSION_NAME + " text not null, "
+                    + ApkTable.Cols.REPO_ID + " integer not null, "
+                    + ApkTable.Cols.HASH + " text not null, "
+                    + ApkTable.Cols.VERSION_CODE + " int not null,"
+                    + ApkTable.Cols.NAME + " text not null, "
+                    + ApkTable.Cols.SIZE + " int not null, "
+                    + ApkTable.Cols.SIGNATURE + " string, "
+                    + ApkTable.Cols.SOURCE_NAME + " string, "
+                    + ApkTable.Cols.MIN_SDK_VERSION + " integer, "
+                    + ApkTable.Cols.TARGET_SDK_VERSION + " integer, "
+                    + ApkTable.Cols.MAX_SDK_VERSION + " integer, "
+                    + ApkTable.Cols.OBB_MAIN_FILE + " string, "
+                    + ApkTable.Cols.OBB_MAIN_FILE_SHA256 + " string, "
+                    + ApkTable.Cols.OBB_PATCH_FILE + " string, "
+                    + ApkTable.Cols.OBB_PATCH_FILE_SHA256 + " string, "
+                    + ApkTable.Cols.REQUESTED_PERMISSIONS + " string, "
+                    + ApkTable.Cols.FEATURES + " string, "
+                    + ApkTable.Cols.NATIVE_CODE + " string, "
+                    + ApkTable.Cols.HASH_TYPE + " string, "
+                    + ApkTable.Cols.ADDED_DATE + " string, "
+                    + ApkTable.Cols.IS_COMPATIBLE + " int not null, "
+                    + ApkTable.Cols.INCOMPATIBLE_REASONS + " text, "
+                    + "PRIMARY KEY (" + ApkTable.Cols.APP_ID + ", " + ApkTable.Cols.VERSION_CODE + ", " + ApkTable.Cols.REPO_ID + ")"
+                    + ");";
 
     static final String CREATE_TABLE_APP_METADATA = "CREATE TABLE " + AppMetadataTable.NAME
             + " ( "
@@ -158,7 +159,7 @@ class DBHelper extends SQLiteOpenHelper {
      * app metadata id, because it can instead look through the primary key index. This can be
      * observed by flipping the order of the primary key columns, and noting the resulting sqlite
      * logs along the lines of:
-     *   E/SQLiteLog(14164): (284) automatic index on fdroid_categoryAppMetadataJoin(appMetadataId)
+     * E/SQLiteLog(14164): (284) automatic index on fdroid_categoryAppMetadataJoin(appMetadataId)
      */
     static final String CREATE_TABLE_CAT_JOIN = "CREATE TABLE " + CatJoinTable.NAME
             + " ( "
@@ -179,12 +180,20 @@ class DBHelper extends SQLiteOpenHelper {
             + InstalledAppTable.Cols.HASH + " TEXT NOT NULL"
             + " );";
 
-    private static final String CREATE_TABLE_APPLICATIONSYNC= "CREATE TABLE " + ApplicationSyncTable.NAME
+    private static final String CREATE_TABLE_APPLICATIONSYNC = "CREATE TABLE " + ApplicationSyncTable.NAME
             + " ( "
-            + ApplicationSyncTable.Cols.TYPE+ " TEXT NOT NULL, "
-            + ApplicationSyncTable.Cols.APP_ID + " TEXT NOT NULL, "
-            + ApplicationSyncTable.Cols.TABLET_VERSION + " TEXT NOT NULL, "
-            + ApplicationSyncTable.Cols.DONGLE_VERSION+ " TEXT NOT NULL "
+            + ApplicationSyncTable.Cols.CONTROLLER_ID + " TEXT NOT NULL, "
+            + ApplicationSyncTable.Cols.CONTROLLER_VERSION + " TEXT NOT NULL, "
+            + ApplicationSyncTable.Cols.DONGLE_ID + " TEXT NOT NULL, "
+            + ApplicationSyncTable.Cols.DONGLE_VERSION + " TEXT NOT NULL "
+            + " );";
+
+    private static final String CREATE_TABLE_APPLICATIONTYPE = "CREATE TABLE " + ApplicationTypeTable.NAME
+            + " ( "
+            + ApplicationTypeTable.Cols.PACKAGE_NAME + " TEXT NOT NULL, "
+            + ApplicationTypeTable.Cols.APP_NAME + " TEXT NOT NULL, "
+            + ApplicationTypeTable.Cols.PRICE + " TEXT NOT NULL, "
+            + ApplicationTypeTable.Cols.TYPE + " TEXT NOT NULL "
             + " );";
 
     protected static final int DB_VERSION = 65;
@@ -208,6 +217,7 @@ class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_REPO);
         db.execSQL(CREATE_TABLE_APP_PREFS);
         db.execSQL(CREATE_TABLE_APPLICATIONSYNC);
+        db.execSQL(CREATE_TABLE_APPLICATIONTYPE);
         ensureIndexes(db);
 
         String[] defaultRepos = context.getResources().getStringArray(R.array.default_repos);
@@ -342,7 +352,7 @@ class DBHelper extends SQLiteOpenHelper {
         updateRepoPriority(db, gpPubKey, gpArchiveAddress, 4);
 
         int priority = 5;
-        String[] projection = new String[] {RepoTable.Cols.SIGNING_CERT, RepoTable.Cols.ADDRESS};
+        String[] projection = new String[]{RepoTable.Cols.SIGNING_CERT, RepoTable.Cols.ADDRESS};
 
         // Order by ID, because that is a good analogy for the order in which they were added.
         // The order in which they were added is likely the order they present in the ManageRepos activity.
@@ -367,7 +377,7 @@ class DBHelper extends SQLiteOpenHelper {
                 RepoTable.NAME,
                 values,
                 RepoTable.Cols.SIGNING_CERT + " = ? AND " + RepoTable.Cols.ADDRESS + " = ?",
-                new String[] {signingCert, address}
+                new String[]{signingCert, address}
         );
     }
 
@@ -391,15 +401,15 @@ class DBHelper extends SQLiteOpenHelper {
         Utils.debugLog(TAG, "Migrating app preferences to separate table");
         db.execSQL(
                 "INSERT INTO " + AppPrefsTable.NAME + " ("
-                + AppPrefsTable.Cols.PACKAGE_NAME + ", "
-                + AppPrefsTable.Cols.IGNORE_THIS_UPDATE + ", "
-                + AppPrefsTable.Cols.IGNORE_ALL_UPDATES
-                + ") SELECT "
-                + "id, "
-                + "ignoreThisUpdate, "
-                + "ignoreAllUpdates "
-                + "FROM " + AppMetadataTable.NAME + " "
-                + "WHERE ignoreThisUpdate > 0 OR ignoreAllUpdates > 0"
+                        + AppPrefsTable.Cols.PACKAGE_NAME + ", "
+                        + AppPrefsTable.Cols.IGNORE_THIS_UPDATE + ", "
+                        + AppPrefsTable.Cols.IGNORE_ALL_UPDATES
+                        + ") SELECT "
+                        + "id, "
+                        + "ignoreThisUpdate, "
+                        + "ignoreAllUpdates "
+                        + "FROM " + AppMetadataTable.NAME + " "
+                        + "WHERE ignoreThisUpdate > 0 OR ignoreAllUpdates > 0"
         );
 
         resetTransient(db);
@@ -448,7 +458,7 @@ class DBHelper extends SQLiteOpenHelper {
 
                 db.execSQL(createTableDdl);
 
-                String nonPackageNameFields = TextUtils.join(", ", new String[] {
+                String nonPackageNameFields = TextUtils.join(", ", new String[]{
                         ApkTable.Cols.APP_ID,
                         ApkTable.Cols.VERSION_NAME,
                         ApkTable.Cols.REPO_ID,
@@ -527,7 +537,7 @@ class DBHelper extends SQLiteOpenHelper {
         }
         List<Repo> oldrepos = new ArrayList<>();
         Cursor cursor = db.query(RepoTable.NAME,
-                new String[] {RepoTable.Cols.ADDRESS, RepoTable.Cols.IN_USE, RepoTable.Cols.SIGNING_CERT},
+                new String[]{RepoTable.Cols.ADDRESS, RepoTable.Cols.IN_USE, RepoTable.Cols.SIGNING_CERT},
                 null, null, null, null, null);
         if (cursor != null) {
             if (cursor.getCount() > 0) {
@@ -608,7 +618,7 @@ class DBHelper extends SQLiteOpenHelper {
         }
         List<Repo> oldrepos = new ArrayList<>();
         Cursor cursor = db.query(RepoTable.NAME,
-                new String[] {RepoTable.Cols.ADDRESS, RepoTable.Cols.SIGNING_CERT},
+                new String[]{RepoTable.Cols.ADDRESS, RepoTable.Cols.SIGNING_CERT},
                 null, null, null, null, null);
         if (cursor != null) {
             if (cursor.getCount() > 0) {
@@ -626,7 +636,7 @@ class DBHelper extends SQLiteOpenHelper {
         for (final Repo repo : oldrepos) {
             ContentValues values = new ContentValues();
             values.put(RepoTable.Cols.FINGERPRINT, Utils.calcFingerprint(repo.signingCertificate));
-            db.update(RepoTable.NAME, values, RepoTable.Cols.ADDRESS + " = ?", new String[] {repo.address});
+            db.update(RepoTable.NAME, values, RepoTable.Cols.ADDRESS + " = ?", new String[]{repo.address});
         }
     }
 
@@ -715,7 +725,7 @@ class DBHelper extends SQLiteOpenHelper {
 
             db.execSQL(createTableDdl);
 
-            String nonIdFields = TextUtils.join(", ", new String[] {
+            String nonIdFields = TextUtils.join(", ", new String[]{
                     RepoTable.Cols.ADDRESS,
                     RepoTable.Cols.NAME,
                     RepoTable.Cols.DESCRIPTION,
@@ -1018,8 +1028,8 @@ class DBHelper extends SQLiteOpenHelper {
     }
 
     private static boolean tableExists(SQLiteDatabase db, String table) {
-        Cursor cursor = db.query("sqlite_master", new String[] {"name"},
-                "type = 'table' AND name = ?", new String[] {table}, null, null, null);
+        Cursor cursor = db.query("sqlite_master", new String[]{"name"},
+                "type = 'table' AND name = ?", new String[]{table}, null, null, null);
 
         boolean exists = cursor.getCount() > 0;
         cursor.close();
