@@ -49,6 +49,7 @@ import org.fdroid.fdroid.compat.TabManager;
 import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
+import org.fdroid.fdroid.iris.UpdatesScheduler;
 import org.fdroid.fdroid.receiver.TokenReceiver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
@@ -88,25 +89,9 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     public static final String DONGLE_SERVICE_ACTION = "fdroidclient.iris.com.fdroiddongle.services";
     public static final String TABLET_SERVICE_ACTION = "fdroidclient.iris.com.fdroidtablet.services";
 
-
+    private UpdatesScheduler updatesScheduler;
     private TokenReceiver tokenReceiver = new TokenReceiver();
-  /*  private BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            if (bundle != null) {
-                String token = bundle.getString("token");
-                String type = bundle.getString("type");
-
-                Preferences.get().setPrefFCMToken(token);
-                Preferences.get().setPrefDeviceType(type);
-
-                Toast.makeText(FDroid.this, token +"" +"\n"+type,
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-    };*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +125,10 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         String type = Preferences.get().getPrefDeviceType();
         Toast.makeText(FDroid.this, token + "" + "\n" + type,
                 Toast.LENGTH_LONG).show();
+
+
+        updatesScheduler = new UpdatesScheduler();
+        updatesScheduler.scheduleUpdates(getApplicationContext());
         // Re-enable once it can be disabled via a setting
         // See https://gitlab.com/fdroid/fdroidclient/issues/435
         //

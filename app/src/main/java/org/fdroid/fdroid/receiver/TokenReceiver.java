@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.fdroid.fdroid.InstallService;
+import org.fdroid.fdroid.iris.InstallService;
 import org.fdroid.fdroid.Preferences;
 
 /**

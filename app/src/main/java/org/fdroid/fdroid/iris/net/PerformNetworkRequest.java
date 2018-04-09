@@ -1,4 +1,4 @@
-package org.fdroid.fdroid.net;
+package org.fdroid.fdroid.iris.net;
 
 import android.os.AsyncTask;
 

@@ -13,7 +13,7 @@ import android.widget.Toast;
 import org.fdroid.fdroid.Preferences;
 import org.fdroid.fdroid.R;
 import org.fdroid.fdroid.UpdateService;
-import org.fdroid.fdroid.net.PerformNetworkRequest;
+import org.fdroid.fdroid.iris.net.PerformNetworkRequest;
 
 import java.util.HashMap;
 
