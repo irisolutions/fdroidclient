@@ -98,7 +98,7 @@ import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
-import org.fdroid.fdroid.net.PushDownloadNotification;
+import org.fdroid.fdroid.iris.net.PushDownloadNotification;
 import org.fdroid.fdroid.privileged.views.AppDiff;
 import org.fdroid.fdroid.privileged.views.AppSecurityPermissions;
 

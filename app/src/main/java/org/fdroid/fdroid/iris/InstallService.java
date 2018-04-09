@@ -1,4 +1,4 @@
-package org.fdroid.fdroid;
+package org.fdroid.fdroid.iris;
 
 import android.app.IntentService;
 import android.app.PendingIntent;
@@ -20,6 +20,9 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import org.fdroid.fdroid.Preferences;
+import org.fdroid.fdroid.R;
+import org.fdroid.fdroid.Utils;
 import org.fdroid.fdroid.data.Apk;
 import org.fdroid.fdroid.data.ApkProvider;
 import org.fdroid.fdroid.data.App;
