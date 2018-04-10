@@ -5,7 +5,16 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
+
+import org.fdroid.fdroid.Preferences;
+import org.fdroid.fdroid.iris.net.GetAppsFromServerDB;
+import org.fdroid.fdroid.iris.net.IOnUpdateResult;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Khaled on 4/9/2018.
@@ -13,9 +22,10 @@ import android.widget.Toast;
  * Descriptions
  */
 
-public class CheckUpdatesService extends IntentService {
+public class CheckUpdatesService extends IntentService implements IOnUpdateResult {
 
     private static final String TAG = CheckUpdatesService.class.getName();
+    private static final int CODE_POST_REQUEST = 1025;
 
     public CheckUpdatesService() {
         super(CheckUpdatesService.class.getSimpleName());
@@ -25,12 +35,107 @@ public class CheckUpdatesService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         Log.d(TAG, "onHandleIntent: just handling intent");
         Handler mHandler = new Handler(getMainLooper());
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT).show();
-            }
-        });
+        getApps();
+    }
 
+
+    public void getApps() {
+        String url;
+        HashMap<String, String> params = new HashMap<>();
+//        params.put("UserName", Preferences.get().getPrefUsername());
+
+//        for testing
+        params.put("UserName", "najah_child");
+        url = "http://192.168.1.111:8080/dashboard/command/getControllerApps";
+
+        Log.d(TAG, "getApps: device = " + Preferences.get().getPrefDeviceType());
+//        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
+//            url = "http://192.168.1.2:8080/dashboard/command/getControllerApps";
+//        } else {
+//            url = "http://192.168.1.2:8080/dashboard/command/getDongleApps";
+//        }
+        GetAppsFromServerDB performNetworkRequest = new GetAppsFromServerDB(this, url, params, CODE_POST_REQUEST);
+        performNetworkRequest.execute();
+    }
+
+    @Override
+    public void onResult(String result) {
+//        ApplicationStatus applicationStatus = new ApplicationStatus();
+        ArrayList<ApplicationStatus> applicationStatusArrayList = new ArrayList<>();
+
+        Log.d(TAG, "onResult: ___________________________");
+//        Log.d(TAG, result);
+
+        try {
+            JSONArray jsonArray = new JSONArray(result);
+            JSONObject jsonObject;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = (JSONObject) jsonArray.get(i);
+                applicationStatusArrayList.add(new ApplicationStatus(
+                        jsonObject.get("ClientID").toString(),
+                        jsonObject.get("ApplicationID").toString(),
+                        jsonObject.get("Version").toString(),
+                        jsonObject.get("WebDownloadDate").toString(),
+                        jsonObject.get("DeviceDownloadDate").toString(),
+                        jsonObject.get("InstallationDate").toString(),
+                        jsonObject.get("Status").toString()
+                ));
+//                Log.d(TAG, "json object ===" + jsonObject.toString());
+//                Log.d(TAG, "onResult: " + jsonObject.get("ClientID") +
+//                        jsonObject.get("ApplicationID") +
+//                        jsonObject.get("Version") +
+//                        jsonObject.get("WebDownloadDate") +
+//                        jsonObject.get("DeviceDownloadDate") +
+//                        jsonObject.get("InstallationDate") +
+//                        jsonObject.get("Status"));
+            }
+            handleApps(applicationStatusArrayList);
+
+        } catch (JSONException e) {
+            Log.e(TAG, "onResult: jsonException", e);
+        }
+    }
+
+    private void handleApps(ArrayList<ApplicationStatus> applicationStatusArrayList) {
+
+        for (ApplicationStatus applicationStatus:
+             applicationStatusArrayList) {
+            switch (applicationStatus.getStatus()) {
+                case "1":
+                    downloadApp(applicationStatus);
+                    break;
+                case "2":
+                    installApp(applicationStatus);
+                    break;
+                case "3":
+//                  doNothing
+                    break;
+                case "4":
+                    updateApp(applicationStatus);
+                    break;
+                case "5":
+                    //do nothing
+                    break;
+                case "6":
+                    // do nothing
+                    break;
+                default:
+                    break;
+                    
+            }
+        }
+    }
+
+    private void updateApp(ApplicationStatus applicationStatus) {
+
+
+    }
+
+    private void installApp(ApplicationStatus applicationStatus) {
+        
+    }
+
+    private void downloadApp(ApplicationStatus applicationStatus) {
+        
     }
 }
