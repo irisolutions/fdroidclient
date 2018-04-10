@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.fdroid.fdroid.Preferences;
@@ -27,6 +28,9 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
     private static final String TAG = CheckUpdatesService.class.getName();
     private static final int CODE_POST_REQUEST = 1025;
 
+    private String activeDownloadUrlString;
+    private LocalBroadcastManager localBroadcastManager;
+
     public CheckUpdatesService() {
         super(CheckUpdatesService.class.getSimpleName());
     }
@@ -38,7 +42,6 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
         getApps();
     }
 
-
     public void getApps() {
         String url;
         HashMap<String, String> params = new HashMap<>();
@@ -46,7 +49,7 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
 
 //        for testing
         params.put("UserName", "najah_child");
-        url = "http://192.168.1.111:8080/dashboard/command/getControllerApps";
+        url = "http://192.168.1.2:8080/dashboard/command/getControllerApps";
 
         Log.d(TAG, "getApps: device = " + Preferences.get().getPrefDeviceType());
 //        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
@@ -80,7 +83,7 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
                         jsonObject.get("InstallationDate").toString(),
                         jsonObject.get("Status").toString()
                 ));
-//                Log.d(TAG, "json object ===" + jsonObject.toString());
+                Log.d(TAG, "json object ===" + jsonObject.toString());
 //                Log.d(TAG, "onResult: " + jsonObject.get("ClientID") +
 //                        jsonObject.get("ApplicationID") +
 //                        jsonObject.get("Version") +
@@ -98,13 +101,16 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
 
     private void handleApps(ArrayList<ApplicationStatus> applicationStatusArrayList) {
 
-        for (ApplicationStatus applicationStatus:
-             applicationStatusArrayList) {
+        for (ApplicationStatus applicationStatus :
+                applicationStatusArrayList) {
             switch (applicationStatus.getStatus()) {
                 case "1":
-                    downloadApp(applicationStatus);
+                    if (Float.parseFloat(applicationStatus.getVersion()) > 0) {
+                        downloadApp(applicationStatus);
+                    }
                     break;
                 case "2":
+                    Log.d(TAG, "handleApps: install app "+applicationStatus.getApplicationId()+"*********************");
                     installApp(applicationStatus);
                     break;
                 case "3":
@@ -121,21 +127,36 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
                     break;
                 default:
                     break;
-                    
+
             }
         }
     }
 
     private void updateApp(ApplicationStatus applicationStatus) {
 
-
     }
 
     private void installApp(ApplicationStatus applicationStatus) {
-        
+        Intent installIntent = new Intent(getApplicationContext(), InstallService.class);
+        installIntent.putExtra("operation", "install");
+        installIntent.putExtra("pkgName", applicationStatus.getApplicationId());
+        installIntent.putExtra("version", applicationStatus.getVersion());
+        getApplicationContext().startService(installIntent);
     }
 
     private void downloadApp(ApplicationStatus applicationStatus) {
-        
+        Intent installIntent = new Intent(getApplicationContext(), InstallService.class);
+        installIntent.putExtra("operation", "download");
+        installIntent.putExtra("pkgName", applicationStatus.getApplicationId());
+        installIntent.putExtra("version", applicationStatus.getVersion());
+        getApplicationContext().startService(installIntent);
+    }
+
+    public void unInstallApp(ApplicationStatus applicationStatus) {
+        Intent installIntent = new Intent(getApplicationContext(), InstallService.class);
+        installIntent.putExtra("operation", "uninstall");
+        installIntent.putExtra("pkgName", applicationStatus.getApplicationId());
+        installIntent.putExtra("version", applicationStatus.getVersion());
+        getApplicationContext().startService(installIntent);
     }
 }

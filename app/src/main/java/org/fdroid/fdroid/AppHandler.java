@@ -105,7 +105,7 @@ import java.util.List;
 
 //import org.fdroid.fdroid.data.Schema;
 
-public class AppDetails extends AppCompatActivity {
+public class AppHandler extends AppCompatActivity {
 
     private static final String TAG = "AppDetails";
 
@@ -580,7 +580,7 @@ public class AppDetails extends AppCompatActivity {
                                 getString(R.string.install_error_notify_title),
                                 app.name);
 
-                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AppDetails.this);
+                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AppHandler.this);
                         alertBuilder.setTitle(title);
                         alertBuilder.setMessage(errorMessage);
                         alertBuilder.setNeutralButton(android.R.string.ok, null);
@@ -629,7 +629,7 @@ public class AppDetails extends AppCompatActivity {
                     if (!TextUtils.isEmpty(errorMessage)) {
                         Log.e(TAG, "uninstall aborted with errorMessage: " + errorMessage);
 
-                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AppDetails.this);
+                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AppHandler.this);
                         alertBuilder.setTitle(R.string.uninstall_error_notify_title);
                         alertBuilder.setMessage(errorMessage);
                         alertBuilder.setNeutralButton(android.R.string.ok, null);
@@ -1092,7 +1092,7 @@ public class AppDetails extends AppCompatActivity {
     public static class AppDetailsSummaryFragment extends Fragment {
 
         final Preferences prefs;
-        private AppDetails appDetails;
+        private AppHandler appHandler;
         private static final int MAX_LINES = 5;
         private static boolean viewAllDescription;
         private static LinearLayout llViewMoreDescription;
@@ -1121,7 +1121,7 @@ public class AppDetails extends AppCompatActivity {
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            appDetails = (AppDetails) activity;
+            appHandler = (AppHandler) activity;
         }
 
         @Override
@@ -1180,7 +1180,7 @@ public class AppDetails extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             public void onClick(View v) {
                 String url = null;
-                App app = appDetails.getApp();
+                App app = appHandler.getApp();
                 int i = v.getId();
                 if (i == R.id.website) {
                     url = app.webURL;
@@ -1212,7 +1212,7 @@ public class AppDetails extends AppCompatActivity {
 
                 }
                 if (url != null) {
-                    ((AppDetails) getActivity()).tryOpenUri(url);
+                    ((AppHandler) getActivity()).tryOpenUri(url);
                 }
             }
         };
@@ -1237,7 +1237,7 @@ public class AppDetails extends AppCompatActivity {
         };
 
         private void setupView(final View view) {
-            App app = appDetails.getApp();
+            App app = appHandler.getApp();
             // Expandable description
             final TextView description = (TextView) view.findViewById(R.id.description);
             final Spanned desc = Html.fromHtml(app.description, null, new Utils.HtmlTagHandler());
@@ -1358,8 +1358,8 @@ public class AppDetails extends AppCompatActivity {
             }
 
             Apk curApk = null;
-            for (int i = 0; i < appDetails.getApks().getCount(); i++) {
-                final Apk apk = appDetails.getApks().getItem(i);
+            for (int i = 0; i < appHandler.getApks().getCount(); i++) {
+                final Apk apk = appHandler.getApks().getItem(i);
                 if (apk.versionCode == app.suggestedVersionCode) {
                     curApk = apk;
                     break;
@@ -1371,7 +1371,7 @@ public class AppDetails extends AppCompatActivity {
             final TextView permissionHeader = (TextView) view.findViewById(R.id.permissions);
 
             final boolean curApkCompatible = curApk != null && curApk.compatible;
-            if (!appDetails.getApks().isEmpty() && (curApkCompatible || prefs.showIncompatibleVersions())) {
+            if (!appHandler.getApks().isEmpty() && (curApkCompatible || prefs.showIncompatibleVersions())) {
                 // build and set the string once
                 buildPermissionInfo();
                 permissionHeader.setOnClickListener(expanderPermissions);
@@ -1402,8 +1402,8 @@ public class AppDetails extends AppCompatActivity {
         }
 
         private void buildPermissionInfo() {
-            AppDiff appDiff = new AppDiff(appDetails.getPackageManager(), appDetails.getApks().getItem(0));
-            AppSecurityPermissions perms = new AppSecurityPermissions(appDetails, appDiff.pkgInfo);
+            AppDiff appDiff = new AppDiff(appHandler.getPackageManager(), appHandler.getApks().getItem(0));
+            AppSecurityPermissions perms = new AppSecurityPermissions(appHandler, appDiff.pkgInfo);
 
             final ViewGroup permList = (ViewGroup) llViewMorePermissions.findViewById(R.id.permission_list);
             permList.addView(perms.getPermissionsView(AppSecurityPermissions.WHICH_ALL));
@@ -1436,7 +1436,7 @@ public class AppDetails extends AppCompatActivity {
                 return;
             }
 
-            App app = appDetails.getApp();
+            App app = appHandler.getApp();
             TextView signatureView = (TextView) view.findViewById(R.id.signature);
             if (prefs.expertMode() && !TextUtils.isEmpty(app.installedSig)) {
                 signatureView.setVisibility(View.VISIBLE);
@@ -1449,7 +1449,7 @@ public class AppDetails extends AppCompatActivity {
 
     public static class AppDetailsHeaderFragment extends Fragment implements View.OnClickListener {
 
-        private AppDetails appDetails;
+        private AppHandler appHandler;
         private Button btMain;
         private ProgressBar progressBar;
         private TextView progressSize;
@@ -1480,11 +1480,11 @@ public class AppDetails extends AppCompatActivity {
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            appDetails = (AppDetails) activity;
+            appHandler= (AppHandler) activity;
         }
 
         private void setupView(View view) {
-            App app = appDetails.getApp();
+            App app = appHandler.getApp();
 
             // Set the icon...
             ImageView iv = (ImageView) view.findViewById(R.id.icon);
@@ -1525,10 +1525,10 @@ public class AppDetails extends AppCompatActivity {
          * set by the async progress broadcasts.
          */
         private void restoreProgressBarOnResume() {
-            if (appDetails.activeDownloadUrlString != null) {
+            if (appHandler.activeDownloadUrlString != null) {
                 // We don't actually know what the current progress is, so this will show an indeterminate
                 // progress bar until the first progress/complete event we receive.
-                if (DownloaderService.isQueuedOrActive(appDetails.activeDownloadUrlString)) {
+                if (DownloaderService.isQueuedOrActive(appHandler.activeDownloadUrlString)) {
                     showIndeterminateProgress(getString(R.string.download_pending));
                 } else {
                     showIndeterminateProgress("");
@@ -1607,12 +1607,12 @@ public class AppDetails extends AppCompatActivity {
          */
         @Override
         public void onClick(View view) {
-            AppDetails appDetails = (AppDetails) getActivity();
-            if (appDetails == null || appDetails.activeDownloadUrlString == null) {
+            AppHandler appHandler = (AppHandler) getActivity();
+            if (appHandler == null || appHandler.activeDownloadUrlString == null) {
                 return;
             }
 
-            InstallManagerService.cancel(getContext(), appDetails.activeDownloadUrlString);
+            InstallManagerService.cancel(getContext(), appHandler.activeDownloadUrlString);
         }
 
         public void updateViews() {
@@ -1624,20 +1624,20 @@ public class AppDetails extends AppCompatActivity {
                 Log.e(TAG, "AppDetailsHeaderFragment.updateViews(): view == null. Oops.");
                 return;
             }
-            App app = appDetails.getApp();
+            App app = appHandler.getApp();
             TextView statusView = (TextView) view.findViewById(R.id.status);
             btMain.setVisibility(View.VISIBLE);
 
-            if (appDetails.activeDownloadUrlString != null) {
+            if (appHandler.activeDownloadUrlString != null) {
                 btMain.setText(R.string.downloading);
                 btMain.setEnabled(false);
             } else if (!app.isInstalled() && app.suggestedVersionCode > 0 &&
-                    appDetails.adapter.getCount() > 0) {
+                    appHandler.adapter.getCount() > 0) {
                 // Check count > 0 due to incompatible apps resulting in an empty list.
                 // If App isn't installed
                 installed = false;
                 statusView.setText(R.string.details_notinstalled);
-                NfcHelper.disableAndroidBeam(appDetails);
+                NfcHelper.disableAndroidBeam(appHandler);
                 // Set Install button and hide second button
                 btMain.setText(R.string.menu_install);
                 btMain.setOnClickListener(mOnClickListener);
@@ -1646,13 +1646,13 @@ public class AppDetails extends AppCompatActivity {
                 // If App is installed
                 installed = true;
                 statusView.setText(getString(R.string.details_installed, app.installedVersionName));
-                NfcHelper.setAndroidBeam(appDetails, app.packageName);
-                if (app.canAndWantToUpdate(appDetails)) {
+                NfcHelper.setAndroidBeam(appHandler, app.packageName);
+                if (app.canAndWantToUpdate(appHandler)) {
                     updateWanted = true;
                     btMain.setText(R.string.menu_upgrade);
                 } else {
                     updateWanted = false;
-                    if (appDetails.packageManager.getLaunchIntentForPackage(app.packageName) != null) {
+                    if (appHandler.packageManager.getLaunchIntentForPackage(app.packageName) != null) {
                         btMain.setText(R.string.menu_launch);
                     } else {
                         btMain.setText(R.string.menu_uninstall);
@@ -1667,8 +1667,8 @@ public class AppDetails extends AppCompatActivity {
                 author.setVisibility(View.VISIBLE);
             }
             TextView currentVersion = (TextView) view.findViewById(R.id.current_version);
-            if (!appDetails.getApks().isEmpty()) {
-                currentVersion.setText(appDetails.getApks().getItem(0).versionName + " (" + app.license + ")");
+            if (!appHandler.getApks().isEmpty()) {
+                currentVersion.setText(appHandler.getApks().getItem(0).versionName + " (" + app.license + ")");
             } else {
                 currentVersion.setVisibility(View.GONE);
                 btMain.setVisibility(View.GONE);
@@ -1678,8 +1678,8 @@ public class AppDetails extends AppCompatActivity {
 
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             public void onClick(View v) {
-                App app = appDetails.getApp();
-                AppDetails activity = (AppDetails) getActivity();
+                App app = appHandler.getApp();
+                AppHandler activity = (AppHandler) getActivity();
 
                 // TODO: 2/22/2018 push notification if the app for other device (tablet/dongle)
 //                PushDownloadNotification.pushAppIDNotification(app.packageName);
@@ -1783,7 +1783,7 @@ public class AppDetails extends AppCompatActivity {
 
         private static final String SUMMARY_TAG = "summary";
 
-        private AppDetails appDetails;
+        private AppHandler appHandler;
         private AppDetailsSummaryFragment summaryFragment;
 
         private FrameLayout headerView;
@@ -1791,7 +1791,7 @@ public class AppDetails extends AppCompatActivity {
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            appDetails = (AppDetails) activity;
+            appHandler = (AppHandler) activity;
         }
 
         @Override
@@ -1813,15 +1813,15 @@ public class AppDetails extends AppCompatActivity {
 
             setListAdapter(null);
             getListView().addHeaderView(headerView);
-            setListAdapter(appDetails.getApks());
+            setListAdapter(appHandler.getApks());
         }
 
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
-            App app = appDetails.getApp();
-            final Apk apk = appDetails.getApks().getItem(position - l.getHeaderViewsCount());
+            App app = appHandler.getApp();
+            final Apk apk = appHandler.getApks().getItem(position - l.getHeaderViewsCount());
             if (app.installedVersionCode == apk.versionCode) {
-                appDetails.uninstallApk();
+                appHandler.uninstallApk();
             } else if (app.installedVersionCode > apk.versionCode) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setMessage(R.string.installDowngrade);
@@ -1830,7 +1830,7 @@ public class AppDetails extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog,
                                                 int whichButton) {
-                                appDetails.install(apk);
+                                appHandler.install(apk);
                             }
                         });
                 builder.setNegativeButton(R.string.no,
@@ -1843,7 +1843,7 @@ public class AppDetails extends AppCompatActivity {
                 AlertDialog alert = builder.create();
                 alert.show();
             } else {
-                appDetails.install(apk);
+                appHandler.install(apk);
             }
         }
 

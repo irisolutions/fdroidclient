@@ -33,6 +33,8 @@ import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
+import org.fdroid.fdroid.net.Downloader;
+import org.fdroid.fdroid.net.DownloaderService;
 
 import java.util.List;
 
@@ -59,51 +61,54 @@ public class InstallService extends IntentService {
 
     private LocalBroadcastManager localBroadcastManager;
     public static boolean updateWanted;
+    private String activeDownloadUrlString;
 
 
     public InstallService() {
+
         super(InstallService.class.getSimpleName());
-        packageManager = getPackageManager();
+//        packageManager = getPackageManager();
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Bundle bundle = intent.getExtras();
+        Bundle bundle = null;
+        if (intent != null) {
+            bundle = intent.getExtras();
+        }
         if (bundle != null) {
-            String message = bundle.getString("message");
-            String title = bundle.getString("title");
-            Log.d(TAG, "onReceive: Token received" + message);
-            String packageName = title;
-            String device = message;
-//            handleApp(packageName, device);
-            showToast(message, title);
+            String operation = bundle.getString("operation");
+            String pkgName= bundle.getString("pkgName");
+            String version= bundle.getString("version");
+            Log.d(TAG, "onReceive: operation" + operation);
+            Log.d(TAG, "onReceive: pkgname" + pkgName);
+            Log.d(TAG, "onHandleIntent: call handle app");
+            handleApp(pkgName,version,operation);
         }
     }
 
 
 
-    private void handleApp(String packageName, String device) {
+    private void handleApp(String packageName, String versionFromServer,String operation) {
 
         app = AppProvider.Helper.findSpecificApp(getContentResolver(), packageName, 1);
 
-        if (app.canAndWantToUpdate(getApplicationContext())) {
+       /* if (app.canAndWantToUpdate(getApplicationContext())) {
             updateWanted = true;
-//            btMain.setText(R.string.menu_upgrade);
         } else {
             updateWanted = false;
             if (packageManager.getLaunchIntentForPackage(app.packageName) != null) {
-//                btMain.setText(R.string.menu_launch);
                 Log.d(TAG, "handleApp: get lunch");
             } else {
                 Log.d(TAG, "handleApp: get uninstall");
-//                btMain.setText(R.string.menu_uninstall);
             }
-        }
+        }*/
 
-        installApp(app);
         if (app != null) {
             Log.d(TAG, "handleApp: ---------- " + app.packageName);
             Log.d(TAG, "handleApp: ---------- " + app.repoId);
+            installApp(app);
         } else {
             Log.d(TAG, "handleApp: ---------- app = null");
         }
@@ -116,8 +121,13 @@ public class InstallService extends IntentService {
             install(apkToInstall);
             return;
         }
+
+
+        final Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
+        install(apkToInstall);
+
 //        if (installed) {
-        if (true) {
+      /*  if (true) {
             // If installed
             if (packageManager.getLaunchIntentForPackage(app.packageName) != null) {
                 // If "launchable", launch
@@ -131,7 +141,7 @@ public class InstallService extends IntentService {
 //            btMain.setText(R.string.system_install_installing);
             final Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
             install(apkToInstall);
-        }
+        }*/
     }
 
 
@@ -236,18 +246,18 @@ public class InstallService extends IntentService {
     }
 
     private void startInstall(Apk apk) {
-//        activeDownloadUrlString = apk.getUrl();
+        activeDownloadUrlString = apk.getUrl();
         registerDownloaderReceiver();
         InstallManagerService.queue(this, app, apk);
     }
 
     private void registerDownloaderReceiver() {
         // TODO: 2/26/2018 handle register download reciever
-//        if (activeDownloadUrlString != null) { // if a download is active
-//            String url = activeDownloadUrlString;
-//            localBroadcastManager.registerReceiver(downloadReceiver,
-//                    DownloaderService.getIntentFilter(url));
-//        }
+        if (activeDownloadUrlString != null) { // if a download is active
+            String url = activeDownloadUrlString;
+            localBroadcastManager.registerReceiver(downloadReceiver,
+                    DownloaderService.getIntentFilter(url));
+        }
     }
 
     /**
@@ -394,5 +404,193 @@ public class InstallService extends IntentService {
             }
         });
     }
+
+
+
+
+    private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case Downloader.ACTION_STARTED:
+                    Log.d(TAG, "onReceive: downloadReceiver : Action Started");
+//                    if (headerFragment != null) {
+//                        headerFragment.startProgress();
+//                    }
+                    break;
+                case Downloader.ACTION_PROGRESS:
+                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_PROGRESS");
+
+//                    if (headerFragment != null) {
+//                        headerFragment.updateProgress(intent.getIntExtra(Downloader.EXTRA_BYTES_READ, -1),
+//                                intent.getIntExtra(Downloader.EXTRA_TOTAL_BYTES, -1));
+//                    }
+                    break;
+                case Downloader.ACTION_COMPLETE:
+                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_PROGRESS");
+
+                    // Starts the install process one the download is complete.
+                    cleanUpFinishedDownload();
+                    localBroadcastManager.registerReceiver(installReceiver,
+                            Installer.getInstallIntentFilter(intent.getData()));
+                    break;
+                case Downloader.ACTION_INTERRUPTED:
+                    if (intent.hasExtra(Downloader.EXTRA_ERROR_MESSAGE)) {
+                        String msg = intent.getStringExtra(Downloader.EXTRA_ERROR_MESSAGE)
+                                + " " + intent.getDataString();
+//                        Toast.makeText(context, R.string.download_error, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                    } else { // user canceled
+//                        Toast.makeText(context, R.string.details_notinstalled, Toast.LENGTH_LONG).show();
+                    }
+                    cleanUpFinishedDownload();
+                    break;
+                default:
+                    throw new RuntimeException("intent action not handled!");
+            }
+        }
+    };
+
+
+    private final BroadcastReceiver installReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case Installer.ACTION_INSTALL_STARTED:
+                    Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
+//                    headerFragment.startProgress(false);
+//                    headerFragment.showIndeterminateProgress(getString(R.string.installing));
+                    break;
+                case Installer.ACTION_INSTALL_COMPLETE:
+                    Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
+//                    headerFragment.removeProgress();
+                    localBroadcastManager.unregisterReceiver(this);
+                    break;
+                case Installer.ACTION_INSTALL_INTERRUPTED:
+                    Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
+//                    headerFragment.removeProgress();
+                    onAppChanged();
+                    String errorMessage =
+                            intent.getStringExtra(Installer.EXTRA_ERROR_MESSAGE);
+
+                    if (!TextUtils.isEmpty(errorMessage)) {
+                        Log.e(TAG, "install aborted with errorMessage: " + errorMessage);
+
+                        String title = String.format(
+                                getString(R.string.install_error_notify_title),
+                                app.name);
+
+                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getApplicationContext());
+                        alertBuilder.setTitle(title);
+                        alertBuilder.setMessage(errorMessage);
+                        alertBuilder.setNeutralButton(android.R.string.ok, null);
+                        alertBuilder.create().show();
+                    }
+
+                    localBroadcastManager.unregisterReceiver(this);
+                    break;
+                case Installer.ACTION_INSTALL_USER_INTERACTION:
+                    PendingIntent installPendingIntent =
+                            intent.getParcelableExtra(Installer.EXTRA_USER_INTERACTION_PI);
+
+                    try {
+                        installPendingIntent.send();
+                    } catch (PendingIntent.CanceledException e) {
+                        Log.e(TAG, "PI canceled", e);
+                    }
+
+                    break;
+                default:
+                    throw new RuntimeException("intent action not handled!");
+            }
+        }
+    };
+
+    /**
+     * Remove progress listener, suppress progress bar, set downloadHandler to null.
+     */
+    private void cleanUpFinishedDownload() {
+        activeDownloadUrlString = null;
+//        if (headerFragment != null) {
+//            headerFragment.removeProgress();
+//        }
+        unregisterDownloaderReceiver();
+    }
+
+
+    private void unregisterDownloaderReceiver() {
+        if (localBroadcastManager == null) {
+            return;
+        }
+        localBroadcastManager.unregisterReceiver(downloadReceiver);
+    }
+
+
+
+
+
 }
 
+
+
+
+
+
+/*
+
+    public void updateViews(View view) {
+        if (view == null) {
+            Log.e(TAG, "AppDetailsHeaderFragment.updateViews(): view == null. Oops.");
+            return;
+        }
+        App app = appHandler.getApp();
+        TextView statusView = (TextView) view.findViewById(R.id.status);
+        btMain.setVisibility(View.VISIBLE);
+
+        if (appHandler.activeDownloadUrlString != null) {
+            btMain.setText(R.string.downloading);
+            btMain.setEnabled(false);
+        } else if (!app.isInstalled() && app.suggestedVersionCode > 0 &&
+                appHandler.adapter.getCount() > 0) {
+            // Check count > 0 due to incompatible apps resulting in an empty list.
+            // If App isn't installed
+            installed = false;
+            statusView.setText(R.string.details_notinstalled);
+            NfcHelper.disableAndroidBeam(appHandler);
+            // Set Install button and hide second button
+            btMain.setText(R.string.menu_install);
+            btMain.setOnClickListener(mOnClickListener);
+            btMain.setEnabled(true);
+        } else if (app.isInstalled()) {
+            // If App is installed
+            installed = true;
+            statusView.setText(getString(R.string.details_installed, app.installedVersionName));
+            NfcHelper.setAndroidBeam(appHandler, app.packageName);
+            if (app.canAndWantToUpdate(appHandler)) {
+                updateWanted = true;
+                btMain.setText(R.string.menu_upgrade);
+            } else {
+                updateWanted = false;
+                if (appHandler.packageManager.getLaunchIntentForPackage(app.packageName) != null) {
+                    btMain.setText(R.string.menu_launch);
+                } else {
+                    btMain.setText(R.string.menu_uninstall);
+                }
+            }
+            btMain.setOnClickListener(mOnClickListener);
+            btMain.setEnabled(true);
+        }
+        TextView author = (TextView) view.findViewById(R.id.author);
+        if (!TextUtils.isEmpty(app.author)) {
+            author.setText(getString(R.string.by_author) + " " + app.author);
+            author.setVisibility(View.VISIBLE);
+        }
+        TextView currentVersion = (TextView) view.findViewById(R.id.current_version);
+        if (!appHandler.getApks().isEmpty()) {
+            currentVersion.setText(appHandler.getApks().getItem(0).versionName + " (" + app.license + ")");
+        } else {
+            currentVersion.setVisibility(View.GONE);
+            btMain.setVisibility(View.GONE);
+        }
+
+    }*/
