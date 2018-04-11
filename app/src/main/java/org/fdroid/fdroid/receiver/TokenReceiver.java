@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.fdroid.fdroid.iris.InstallService;
+import org.fdroid.fdroid.iris.DongleInstallationService;
 import org.fdroid.fdroid.Preferences;
 
 /**
@@ -51,7 +51,7 @@ public class TokenReceiver extends BroadcastReceiver {
     }
 
     private void startService(Context context, String message, String title) {
-        Intent intent = new Intent(context, InstallService.class);
+        Intent intent = new Intent(context, DongleInstallationService.class);
         intent.putExtra(MESSAGE, message);
         intent.putExtra(TITLE, title);
         context.startService(intent);

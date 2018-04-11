@@ -3,6 +3,7 @@ package org.fdroid.fdroid.iris;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -27,6 +28,12 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
 
     private static final String TAG = CheckUpdatesService.class.getName();
     private static final int CODE_POST_REQUEST = 1025;
+    public static final String OPERATION = "operation";
+    public static final String PKG_NAME = "pkgName";
+    public static final String VERSION = "version";
+    public static final String UNINSTALL_OPERATION = "uninstall";
+    public static final String DOWNLOAD_OPERATION = "download";
+    public static final String INSTALL_OPERATION = "install";
 
     private String activeDownloadUrlString;
     private LocalBroadcastManager localBroadcastManager;
@@ -120,6 +127,7 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
                     updateApp(applicationStatus);
                     break;
                 case "5":
+                    unInstallApp(applicationStatus);
                     //do nothing
                     break;
                 case "6":
@@ -137,24 +145,37 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
     }
 
     private void installApp(ApplicationStatus applicationStatus) {
-        Intent installIntent = new Intent(getApplicationContext(), InstallService.class);
-        installIntent.putExtra("operation", "install");
-        installIntent.putExtra("pkgName", applicationStatus.getApplicationId());
-        installIntent.putExtra("version", applicationStatus.getVersion());
+        Intent installIntent= getIntent();
+        installIntent.putExtra(OPERATION, INSTALL_OPERATION);
+        installIntent.putExtra(PKG_NAME, applicationStatus.getApplicationId());
+        installIntent.putExtra(VERSION, applicationStatus.getVersion());
         getApplicationContext().startService(installIntent);
     }
 
+    @NonNull
+    private Intent getIntent() {
+        Intent installIntent;
+        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+            installIntent = new Intent(getApplicationContext(), DongleInstallationService.class);
+        } else if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
+            installIntent = new Intent(getApplicationContext(), ControllerInstallationService.class);
+        } else {
+            installIntent = new Intent(getApplicationContext(), ControllerInstallationService.class);
+        }
+        return installIntent;
+    }
+
     private void downloadApp(ApplicationStatus applicationStatus) {
-        Intent installIntent = new Intent(getApplicationContext(), InstallService.class);
-        installIntent.putExtra("operation", "download");
+        Intent installIntent = getIntent();
+        installIntent.putExtra("operation", DOWNLOAD_OPERATION);
         installIntent.putExtra("pkgName", applicationStatus.getApplicationId());
         installIntent.putExtra("version", applicationStatus.getVersion());
         getApplicationContext().startService(installIntent);
     }
 
     public void unInstallApp(ApplicationStatus applicationStatus) {
-        Intent installIntent = new Intent(getApplicationContext(), InstallService.class);
-        installIntent.putExtra("operation", "uninstall");
+        Intent installIntent = getIntent();
+        installIntent.putExtra("operation", UNINSTALL_OPERATION);
         installIntent.putExtra("pkgName", applicationStatus.getApplicationId());
         installIntent.putExtra("version", applicationStatus.getVersion());
         getApplicationContext().startService(installIntent);

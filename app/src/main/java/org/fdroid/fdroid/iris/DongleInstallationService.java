@@ -44,9 +44,9 @@ import java.util.List;
  * Descriptions
  */
 
-public class InstallService extends IntentService {
+public class DongleInstallationService extends IntentService {
 
-    private static final String TAG = InstallService.class.getName();
+    private static final String TAG = DongleInstallationService.class.getName();
     private Handler toastHandler;
     private App app;
     private PackageManager packageManager;
@@ -64,9 +64,9 @@ public class InstallService extends IntentService {
     private String activeDownloadUrlString;
 
 
-    public InstallService() {
+    public DongleInstallationService() {
 
-        super(InstallService.class.getSimpleName());
+        super(DongleInstallationService.class.getSimpleName());
 //        packageManager = getPackageManager();
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }

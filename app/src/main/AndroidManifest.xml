@@ -483,7 +483,10 @@
             android:name=".installer.InstallerService"
             android:exported="false" />
         <service
-            android:name=".iris.InstallService"
+            android:name=".iris.DongleInstallationService"
+            android:exported="false" />
+        <service
+            android:name=".iris.ControllerInstallationService"
             android:exported="false" />
         <service
             android:name=".CleanCacheService"
