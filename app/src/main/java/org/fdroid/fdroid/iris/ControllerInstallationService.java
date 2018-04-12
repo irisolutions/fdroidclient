@@ -504,7 +504,6 @@ public class ControllerInstallationService extends IntentService {
                     } catch (PendingIntent.CanceledException e) {
                         Log.e(TAG, "PI canceled", e);
                     }
-
                     break;
                 default:
                     throw new RuntimeException("intent action not handled!");
@@ -523,7 +522,6 @@ public class ControllerInstallationService extends IntentService {
         unregisterDownloaderReceiver();
     }
 
-
     private void unregisterDownloaderReceiver() {
         if (localBroadcastManager == null) {
             return;
@@ -531,12 +529,7 @@ public class ControllerInstallationService extends IntentService {
         localBroadcastManager.unregisterReceiver(downloadReceiver);
     }
 
-
 }
-
-
-
-
 
 
 /*

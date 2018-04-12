@@ -56,7 +56,7 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
 
 //        for testing
         params.put("UserName", "najah_child");
-        url = "http://192.168.1.2:8080/dashboard/command/getControllerApps";
+        url = Preferences.get().getHostIp()+"/dashboard/command/getControllerApps";
 
         Log.d(TAG, "getApps: device = " + Preferences.get().getPrefDeviceType());
 //        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
@@ -64,6 +64,7 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
 //        } else {
 //            url = "http://192.168.1.2:8080/dashboard/command/getDongleApps";
 //        }
+        Preferences.get().getAllowedAppsURL();
         GetAppsFromServerDB performNetworkRequest = new GetAppsFromServerDB(this, url, params, CODE_POST_REQUEST);
         performNetworkRequest.execute();
     }

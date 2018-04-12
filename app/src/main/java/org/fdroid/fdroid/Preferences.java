@@ -30,7 +30,6 @@ import info.guardianproject.netcipher.NetCipher;
 public final class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "Preferences";
-
     private final SharedPreferences preferences;
 
     private Preferences(Context context) {
@@ -44,6 +43,7 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     }
 
     public static final String PREF_UPD_INTERVAL = "updateInterval";
+
     public static final String PREF_UPD_WIFI_ONLY = "updateOnWifiOnly";
     public static final String PREF_AUTO_DOWNLOAD_INSTALL_UPDATES = "updateAutoDownload";
     public static final String PREF_UPD_NOTIFY = "updateNotify";
@@ -71,12 +71,14 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     // sam
     public static final String PREF_USERNAME = "iris-username";
     public static final String PREF_PASSWORD = "iris-password";
-
     public static final String PREF_FCM_TOCKEN = "FCMToken";
+
     public static final String PREF_DEVICE_TYPE = "deviceType";
-
-
+    public static final String HOST_IP = "HostIP";
     private static final boolean DEFAULT_ROOTED = true;
+
+
+
     private static final boolean DEFAULT_HIDE_ANTI_FEATURE_APPS = false;
     private static final int DEFAULT_UPD_HISTORY = 14;
     private static final boolean DEFAULT_PRIVILEGED_INSTALLER = true;
@@ -94,12 +96,14 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     public static final int DEFAULT_PROXY_PORT = 8118;
     private static final boolean DEFAULT_SHOW_NFC_DURING_SWAP = true;
     private static final boolean DEFAULT_POST_PRIVILEGED_INSTALL = false;
-
     public static final String DEFAULT_USERNAME = "";
+
     public static final String DEFAULT_PASSWORD = "";
     public static final String DEFAULT_DEVICE_TYPE= "tablet";
-    public static final String DEFAULT_FCM_TOKEN= "";
+    private static final String DEFAULT_HOST_IP = "127.0.0.1";
 
+
+    public static final String DEFAULT_FCM_TOKEN= "";
     public enum Theme {
         light,
         dark,
@@ -330,16 +334,24 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
         preferences.edit().putString(PREF_FCM_TOCKEN, token).apply();
     }
 
+    public void setHostIp(String hostIp) {
+        preferences.edit().putString(HOST_IP, hostIp).apply();
+    }
+
     public void setPrefDeviceType(String type) {
-        preferences.edit().putString(PREF_DEVICE_TYPE, type).apply();
+        preferences.edit().putString(HOST_IP, type).apply();
     }
 
     public String getPrefFCMToken() {
         return preferences.getString(PREF_FCM_TOCKEN, DEFAULT_PASSWORD);
     }
 
+    public String getHostIp() {
+        return preferences.getString(HOST_IP, DEFAULT_HOST_IP);
+    }
+
     public String getPrefDeviceType() {
-        return preferences.getString(PREF_DEVICE_TYPE, DEFAULT_PASSWORD);
+        return preferences.getString(HOST_IP, DEFAULT_PASSWORD);
     }
 
 

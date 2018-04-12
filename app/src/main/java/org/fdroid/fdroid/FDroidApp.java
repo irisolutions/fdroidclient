@@ -213,6 +213,8 @@ public class FDroidApp extends Application {
 //            return;
 //        }
 
+        Preferences.get().setHostIp("http://192.168.1.2:8080");
+
         PRNGFixes.apply();
 
         Preferences.setup(this);
