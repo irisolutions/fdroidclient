@@ -132,5 +132,4 @@ public class InstallerService extends IntentService {
         intent.putExtra(Installer.EXTRA_APK, apk);
         context.startService(intent);
     }
-
 }

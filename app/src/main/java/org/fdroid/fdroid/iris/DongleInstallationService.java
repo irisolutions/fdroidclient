@@ -33,9 +33,11 @@ import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
+import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -431,6 +433,7 @@ public class DongleInstallationService extends IntentService {
 
                     // Starts the install process one the download is complete.
                     cleanUpFinishedDownload();
+                    changeAppStatus(app.packageName, String.valueOf(2));
                     localBroadcastManager.registerReceiver(installReceiver,
                             Installer.getInstallIntentFilter(intent.getData()));
                     break;
@@ -465,6 +468,7 @@ public class DongleInstallationService extends IntentService {
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
 //                    headerFragment.removeProgress();
                     localBroadcastManager.unregisterReceiver(this);
+                    changeAppStatus(app.packageName, String.valueOf(3));
                     break;
                 case Installer.ACTION_INSTALL_INTERRUPTED:
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
@@ -525,9 +529,20 @@ public class DongleInstallationService extends IntentService {
         localBroadcastManager.unregisterReceiver(downloadReceiver);
     }
 
+    private void changeAppStatus(String applicationId, String status) {
+        String url;
+        HashMap<String, String> params = new HashMap<>();
 
+        params.put("UserName", Preferences.get().getPrefUsername());
+        params.put("appID", applicationId);
+        params.put("status", status);
+        url = Preferences.get().getHostIp() + "/dashboard/command/changeDongleAppStatus";
 
+        Log.d(TAG, "changeAppStatus:  = " + applicationId);
 
+        PushAppStatusToServer pushAppStatusToServer = new PushAppStatusToServer(url, params, PushAppStatusToServer.CODE_POST_REQUEST);
+        pushAppStatusToServer.execute();
+    }
 
 }
 

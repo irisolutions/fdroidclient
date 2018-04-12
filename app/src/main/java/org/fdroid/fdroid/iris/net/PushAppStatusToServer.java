@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
     private static final int CODE_GET_REQUEST = 1024;
-    private static final int CODE_POST_REQUEST = 1025;
+    public static final int CODE_POST_REQUEST = 1025;
     private static final String TAG = PushAppStatusToServer.class.getName();
     //the url where we need to send the request
     String url;
@@ -30,7 +30,7 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
     int requestCode;
 
     //constructor to initialize values
-    public PushAppStatusToServer(IOnUpdateResult iOnUpdateResult, String url, HashMap<String, String> params, int requestCode) {
+    public PushAppStatusToServer(String url, HashMap<String, String> params, int requestCode) {
         this.url = url;
         this.params = params;
         this.requestCode = requestCode;

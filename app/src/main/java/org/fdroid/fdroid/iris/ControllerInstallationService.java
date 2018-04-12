@@ -33,9 +33,11 @@ import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
+import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -259,7 +261,7 @@ public class ControllerInstallationService extends IntentService {
     }
 
     private void registerDownloaderReceiver() {
-        // TODO: 2/26/2018 handle register download reciever
+        // TODO: 2/26/2018 handle register download receiver
         if (activeDownloadUrlString != null) { // if a download is active
             String url = activeDownloadUrlString;
             localBroadcastManager.registerReceiver(downloadReceiver,
@@ -348,7 +350,7 @@ public class ControllerInstallationService extends IntentService {
                 case Installer.ACTION_UNINSTALL_COMPLETE:
 //                    headerFragment.removeProgress();
                     onAppChanged();
-
+                    changeAppStatus(app.packageName, String.valueOf(1));
                     localBroadcastManager.unregisterReceiver(this);
                     break;
                 case Installer.ACTION_UNINSTALL_INTERRUPTED:
@@ -436,6 +438,7 @@ public class ControllerInstallationService extends IntentService {
 
                     // Starts the install process one the download is complete.
                     cleanUpFinishedDownload();
+                    changeAppStatus(app.packageName, String.valueOf(2));
                     // TODO: 4/11/2018 -khaled- enable or disable install reciever -need confirmation from Ayman-
 //                    localBroadcastManager.registerReceiver(installReceiver,
 //                            Installer.getInstallIntentFilter(intent.getData()));
@@ -457,6 +460,21 @@ public class ControllerInstallationService extends IntentService {
         }
     };
 
+    private void changeAppStatus(String applicationId, String status) {
+        String url;
+        HashMap<String, String> params = new HashMap<>();
+
+        params.put("UserName", Preferences.get().getPrefUsername());
+        params.put("appID", applicationId);
+        params.put("status", status);
+        url = Preferences.get().getHostIp() + "/dashboard/command/changeControllerAppStatus";
+
+        Log.d(TAG, "changeAppStatus:  = " + applicationId);
+
+        PushAppStatusToServer pushAppStatusToServer = new PushAppStatusToServer(url, params, PushAppStatusToServer.CODE_POST_REQUEST);
+        pushAppStatusToServer.execute();
+    }
+
 
     private final BroadcastReceiver installReceiver = new BroadcastReceiver() {
         @Override
@@ -471,6 +489,7 @@ public class ControllerInstallationService extends IntentService {
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
 //                    headerFragment.removeProgress();
                     localBroadcastManager.unregisterReceiver(this);
+                    changeAppStatus(app.packageName, String.valueOf(3));
                     break;
                 case Installer.ACTION_INSTALL_INTERRUPTED:
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
