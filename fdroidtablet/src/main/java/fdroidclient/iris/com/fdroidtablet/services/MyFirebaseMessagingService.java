@@ -6,6 +6,8 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.fdroid.fdroid.iris.CheckUpdatesService;
+
 import java.util.Map;
 
 import fdroidclient.iris.com.fdroidtablet.FDroidTablet;
@@ -46,10 +48,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             String message = remoteMessage.getNotification().getBody();
             String title = remoteMessage.getNotification().getTitle();
+
+//            start update service to check updates for this user
+//            startUpdateService();
+
             sendTokenToBroadcast(message, title);
             handleNotification(remoteMessage.getNotification());
         }// Check if message contains a notification payload.
 
+    }
+
+    private void startUpdateService() {
+        Intent i = new Intent(getApplicationContext(), CheckUpdatesService.class);
+        getApplicationContext().startService(i);
     }
 
     private void sendTokenToBroadcast(String message, String title) {
