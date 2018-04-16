@@ -20,7 +20,7 @@ public class UpdatesScheduler {
         // TODO: 4/9/2018 do interval 5 minutes
         long interval = 1000 * 60 * 5; // 5 minutes
         // Create a PendingIntent to be triggered when the alarm goes off
-        final PendingIntent pIntent = PendingIntent.getBroadcast(context, AlarmUpdateReceiver.REQUEST_CODE,
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, AlarmUpdateReceiver.REQUEST_CODE,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 //                PendingIntent.FLAG_UPDATE_CURRENT);
@@ -30,7 +30,7 @@ public class UpdatesScheduler {
         // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
         // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                interval, pIntent);
+                interval, pendingIntent);
     }
 
     public void cancelUpdatesScheduler(Context context) {

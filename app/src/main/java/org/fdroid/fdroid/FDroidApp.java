@@ -310,6 +310,8 @@ public class FDroidApp extends Application {
             }
             grantUriPermission(packageName, InstallHistoryService.LOG_URI, modeFlags);
         }
+
+        Preferences.get().setHostIp("http://192.168.1.103:8080");
     }
 
     /**

@@ -48,7 +48,7 @@ import java.util.List;
 
 public class ControllerInstallationService extends IntentService {
 
-    private static final String TAG = DongleInstallationService.class.getName();
+    private static final String TAG = ControllerInstallationService.class.getName();
     private Handler toastHandler;
     private App app;
     private PackageManager packageManager;

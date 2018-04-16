@@ -339,7 +339,7 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     }
 
     public void setPrefDeviceType(String type) {
-        preferences.edit().putString(HOST_IP, type).apply();
+        preferences.edit().putString(PREF_DEVICE_TYPE, type).apply();
     }
 
     public String getPrefFCMToken() {
@@ -351,7 +351,7 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
     }
 
     public String getPrefDeviceType() {
-        return preferences.getString(HOST_IP, DEFAULT_PASSWORD);
+        return preferences.getString(PREF_DEVICE_TYPE, DEFAULT_PASSWORD);
     }
 
 

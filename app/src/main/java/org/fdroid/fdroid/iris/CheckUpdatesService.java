@@ -124,6 +124,7 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
                 case "1"://website_downloaded
                     if (Float.parseFloat(applicationStatus.getVersion()) > 0) {
                         downloadApp(applicationStatus);
+                        Log.d(TAG, "handleApps: download app "+applicationStatus.getApplicationId());
                     }
                     break;
                 case "2"://device_downloaded
