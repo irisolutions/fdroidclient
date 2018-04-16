@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -33,11 +32,9 @@ import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
-import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -284,9 +281,11 @@ public class ControllerInstallationService extends IntentService {
      * @throws IllegalStateException If neither the {@link PackageManager} or the
      *                               {@link InstalledAppProvider} can't find a reference to the installed apk.
      */
-    @NonNull
     private Apk getInstalledApk() {
         try {
+            if (packageManager.getPackageInfo(app.packageName, 0) == null) {
+                return null;
+            }
             PackageInfo pi = packageManager.getPackageInfo(app.packageName, 0);
 
             Apk apk = ApkProvider.Helper.findApkFromAnyRepo(this, pi.packageName, pi.versionCode);
@@ -312,8 +311,14 @@ public class ControllerInstallationService extends IntentService {
         if (app.installedApk == null) {
             // TODO ideally, app would be refreshed immediately after install, then this
             // workaround would be unnecessary
-            app.installedApk = getInstalledApk();
+
+            if (getInstalledApk() == null) {
+                return;
+            } else {
+                app.installedApk = getInstalledApk();
+            }
         }
+
 
         Installer installer = InstallerFactory.create(this, app.installedApk);
         Intent intent = installer.getUninstallScreen();
@@ -350,7 +355,6 @@ public class ControllerInstallationService extends IntentService {
                 case Installer.ACTION_UNINSTALL_COMPLETE:
 //                    headerFragment.removeProgress();
                     onAppChanged();
-                    changeAppStatus(app.packageName, String.valueOf(1));
                     localBroadcastManager.unregisterReceiver(this);
                     break;
                 case Installer.ACTION_UNINSTALL_INTERRUPTED:
@@ -438,10 +442,9 @@ public class ControllerInstallationService extends IntentService {
 
                     // Starts the install process one the download is complete.
                     cleanUpFinishedDownload();
-                    changeAppStatus(app.packageName, String.valueOf(2));
                     // TODO: 4/11/2018 -khaled- enable or disable install reciever -need confirmation from Ayman-
-//                    localBroadcastManager.registerReceiver(installReceiver,
-//                            Installer.getInstallIntentFilter(intent.getData()));
+                    localBroadcastManager.registerReceiver(installReceiver,
+                            Installer.getInstallIntentFilter(intent.getData()));
                     break;
                 case Downloader.ACTION_INTERRUPTED:
                     if (intent.hasExtra(Downloader.EXTRA_ERROR_MESSAGE)) {
@@ -460,21 +463,6 @@ public class ControllerInstallationService extends IntentService {
         }
     };
 
-    private void changeAppStatus(String applicationId, String status) {
-        String url;
-        HashMap<String, String> params = new HashMap<>();
-
-        params.put("UserName", Preferences.get().getPrefUsername());
-        params.put("appID", applicationId);
-        params.put("status", status);
-        url = Preferences.get().getHostIp() + "/dashboard/command/changeControllerAppStatus";
-
-        Log.d(TAG, "changeAppStatus:  = " + applicationId);
-
-        PushAppStatusToServer pushAppStatusToServer = new PushAppStatusToServer(url, params, PushAppStatusToServer.CODE_POST_REQUEST);
-        pushAppStatusToServer.execute();
-    }
-
 
     private final BroadcastReceiver installReceiver = new BroadcastReceiver() {
         @Override
@@ -489,7 +477,6 @@ public class ControllerInstallationService extends IntentService {
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
 //                    headerFragment.removeProgress();
                     localBroadcastManager.unregisterReceiver(this);
-                    changeAppStatus(app.packageName, String.valueOf(3));
                     break;
                 case Installer.ACTION_INSTALL_INTERRUPTED:
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");

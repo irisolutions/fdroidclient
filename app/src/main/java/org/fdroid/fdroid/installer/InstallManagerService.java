@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.content.IntentCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
@@ -29,6 +28,7 @@ import org.fdroid.fdroid.data.Apk;
 import org.fdroid.fdroid.data.App;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.Schema;
+import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
@@ -173,7 +173,6 @@ public class InstallManagerService extends Service {
         App app = intent.getParcelableExtra(EXTRA_APP);
         Apk apk = intent.getParcelableExtra(EXTRA_APK);
         if (app == null || apk == null) {
-            Utils.debugLog(TAG, "Intent had null EXTRA_APP and/or EXTRA_APK: " + intent);
             return START_NOT_STICKY;
         }
         addToActive(urlString, app, apk);
@@ -302,6 +301,7 @@ public class InstallManagerService extends Service {
                         registerInstallerReceivers(downloadUri);
 
                         Apk apk = ACTIVE_APKS.get(urlString);
+                        PushAppStatusToServer.changeAppStatus(apk.packageName, String.valueOf(2));
 
                         InstallerService.install(context, localApkUri, downloadUri, apk);
                         break;
@@ -339,6 +339,7 @@ public class InstallManagerService extends Service {
                             cancelNotification(downloadUrl);
                         }
 
+                        PushAppStatusToServer.changeAppStatus(apkComplete.packageName, String.valueOf(3));
                         localBroadcastManager.unregisterReceiver(this);
                         break;
                     case Installer.ACTION_INSTALL_INTERRUPTED:
@@ -551,7 +552,7 @@ public class InstallManagerService extends Service {
         Intent intent = new Intent(this, InstallManagerService.class)
                 .setData(Uri.parse(urlString))
                 .setAction(ACTION_CANCEL)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return PendingIntent.getService(this,
                 urlString.hashCode(),
                 intent,

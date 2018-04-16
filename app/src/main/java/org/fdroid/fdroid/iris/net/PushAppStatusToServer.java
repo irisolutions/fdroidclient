@@ -3,7 +3,7 @@ package org.fdroid.fdroid.iris.net;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
+import org.fdroid.fdroid.Preferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +21,6 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
     private static final String TAG = PushAppStatusToServer.class.getName();
     //the url where we need to send the request
     String url;
-    String networkTask;
 
     //the parameters
     HashMap<String, String> params;
@@ -40,7 +39,6 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-//        progressBar.setVisibility(View.VISIBLE);
     }
 
 
@@ -51,7 +49,7 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
         try {
             JSONObject object = new JSONObject(result);
             if (object.getBoolean("success")) {
-                JSONArray apps = object.getJSONArray("apps");
+                Log.d(TAG, "onPostExecute: success");
             }
         } catch (JSONException e) {
             Log.e(TAG, "onPostExecute: JSONException", e);
@@ -72,4 +70,27 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
 
         return null;
     }
+
+    public static void changeAppStatus(String applicationId, String status) {
+        String url = Preferences.get().getHostIp() + "/dashboard/command/changeControllerAppStatus";
+        HashMap<String, String> params = new HashMap<>();
+
+        params.put("UserName", Preferences.get().getPrefUsername());
+        params.put("appID", applicationId);
+        params.put("status", status);
+        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
+            url = Preferences.get().getHostIp() + "/dashboard/command/changeControllerAppStatus";
+            Log.d(TAG, "changeAppStatus: tablet");
+        } else if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+            Log.d(TAG, "changeAppStatus: dongle");
+            url = Preferences.get().getHostIp() + "/dashboard/command/changeDongleAppStatus";
+        }
+
+        Log.d(TAG, "changeAppStatus:  = " + applicationId);
+
+        PushAppStatusToServer pushAppStatusToServer = new PushAppStatusToServer(url, params, PushAppStatusToServer.CODE_POST_REQUEST);
+        pushAppStatusToServer.execute();
+    }
+
+
 }

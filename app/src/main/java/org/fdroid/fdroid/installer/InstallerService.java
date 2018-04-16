@@ -29,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.fdroid.fdroid.Utils;
 import org.fdroid.fdroid.data.Apk;
+import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -76,6 +77,7 @@ public class InstallerService extends IntentService {
             Uri downloadUri = intent.getParcelableExtra(Installer.EXTRA_DOWNLOAD_URI);
             installer.installPackage(uri, downloadUri);
         } else if (ACTION_UNINSTALL.equals(intent.getAction())) {
+            PushAppStatusToServer.changeAppStatus(apk.packageName, String.valueOf(6));
             installer.uninstallPackage();
             new Thread() {
                 @Override
