@@ -31,8 +31,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import org.fdroid.fdroid.Preferences;
 import org.fdroid.fdroid.R;
 import org.fdroid.fdroid.data.Apk;
+import org.fdroid.fdroid.iris.SudoInstall;
 
 /**
  * A transparent activity as a wrapper around Android's PackageInstaller Intents
@@ -75,6 +77,12 @@ public class DefaultInstallerActivity extends FragmentActivity {
         if (uri == null) {
             throw new RuntimeException("Set the data uri to point to an apk location!");
         }
+
+        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+            Log.d(TAG, "installPackage: " + uri.getPath());
+            SudoInstall.install(uri.getPath());
+        }
+
         // https://code.google.com/p/android/issues/detail?id=205827
         if ((Build.VERSION.SDK_INT < 24)
                 && (!uri.getScheme().equals("file"))) {
@@ -134,6 +142,11 @@ public class DefaultInstallerActivity extends FragmentActivity {
                     "Package that is scheduled for uninstall is not installed!");
             finish();
             return;
+        }
+
+        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+            Log.d(TAG, "unInstallPackage: " + packageName);
+            SudoInstall.unInstall(packageName);
         }
 
         Uri uri = Uri.fromParts("package", packageName, null);
@@ -216,7 +229,6 @@ public class DefaultInstallerActivity extends FragmentActivity {
             default:
                 throw new RuntimeException("Invalid request code!");
         }
-
         // after doing the broadcasts, finish this transparent wrapper activity
         finish();
     }

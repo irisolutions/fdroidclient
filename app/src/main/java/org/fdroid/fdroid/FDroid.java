@@ -38,6 +38,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,6 +57,8 @@ import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
 import org.fdroid.fdroid.views.swap.SwapWorkflowActivity;
+
+import java.io.IOException;
 
 public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -141,6 +144,17 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         // if (UpdateService.isNetworkAvailableForUpdate(this)) {
         //     UpdateService.updateNow(this);
         // }
+        requireRootAccess();
+    }
+
+    private void requireRootAccess() {
+        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+            try {
+                Runtime.getRuntime().exec("su");
+            } catch (IOException e) {
+                Log.e(TAG, "onCreate: ", e);
+            }
+        }
     }
 
     private void performSearch(String query) {
