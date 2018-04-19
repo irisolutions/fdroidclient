@@ -155,9 +155,9 @@ public abstract class Installer {
         sendBroadcastInstall(context, downloadUri, action, apk, null, errorMessage);
     }
 
-    static void sendBroadcastInstall(Context context,
-                                     Uri downloadUri, String action, Apk apk,
-                                     PendingIntent pendingIntent, String errorMessage) {
+    public static void sendBroadcastInstall(Context context,
+                                            Uri downloadUri, String action, Apk apk,
+                                            PendingIntent pendingIntent, String errorMessage) {
         Intent intent = new Intent(action);
         intent.setData(downloadUri);
         intent.putExtra(Installer.EXTRA_USER_INTERACTION_PI, pendingIntent);

@@ -92,44 +92,45 @@ public class DefaultInstallerActivity extends FragmentActivity {
             Log.d(TAG, "installPackage: " + uri.getPath());
             SudoInstall.install(uri.getPath());
             installer.sendBroadcastInstall(downloadUri, Installer.ACTION_INSTALL_COMPLETE);
-        }
+        }else {
 
-        Intent intent = new Intent();
+            Intent intent = new Intent();
 
-        // Note regarding EXTRA_NOT_UNKNOWN_SOURCE:
-        // works only when being installed as system-app
-        // https://code.google.com/p/android/issues/detail?id=42253
+            // Note regarding EXTRA_NOT_UNKNOWN_SOURCE:
+            // works only when being installed as system-app
+            // https://code.google.com/p/android/issues/detail?id=42253
 
-        if (Build.VERSION.SDK_INT < 14) {
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-        } else if (Build.VERSION.SDK_INT < 16) {
-            intent.setAction(Intent.ACTION_INSTALL_PACKAGE);
-            intent.setData(uri);
-            intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-            intent.putExtra(Intent.EXTRA_ALLOW_REPLACE, true);
-        } else if (Build.VERSION.SDK_INT < 24) {
-            intent.setAction(Intent.ACTION_INSTALL_PACKAGE);
-            intent.setData(uri);
-            intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-        } else { // Android N
-            intent.setAction(Intent.ACTION_INSTALL_PACKAGE);
-            intent.setData(uri);
-            // grant READ permission for this content Uri
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-        }
+            if (Build.VERSION.SDK_INT < 14) {
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, "application/vnd.android.package-archive");
+            } else if (Build.VERSION.SDK_INT < 16) {
+                intent.setAction(Intent.ACTION_INSTALL_PACKAGE);
+                intent.setData(uri);
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+                intent.putExtra(Intent.EXTRA_ALLOW_REPLACE, true);
+            } else if (Build.VERSION.SDK_INT < 24) {
+                intent.setAction(Intent.ACTION_INSTALL_PACKAGE);
+                intent.setData(uri);
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+            } else { // Android N
+                intent.setAction(Intent.ACTION_INSTALL_PACKAGE);
+                intent.setData(uri);
+                // grant READ permission for this content Uri
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+            }
 
-        try {
-            startActivityForResult(intent, REQUEST_CODE_INSTALL);
-        } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "ActivityNotFoundException", e);
-            installer.sendBroadcastInstall(downloadUri, Installer.ACTION_INSTALL_INTERRUPTED,
-                    "This Android rom does not support ACTION_INSTALL_PACKAGE!");
-            finish();
+            try {
+                startActivityForResult(intent, REQUEST_CODE_INSTALL);
+            } catch (ActivityNotFoundException e) {
+                Log.e(TAG, "ActivityNotFoundException", e);
+                installer.sendBroadcastInstall(downloadUri, Installer.ACTION_INSTALL_INTERRUPTED,
+                        "This Android rom does not support ACTION_INSTALL_PACKAGE!");
+                finish();
+            }
         }
     }
 
@@ -156,26 +157,27 @@ public class DefaultInstallerActivity extends FragmentActivity {
             SudoInstall.unInstall(packageName);
             installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_COMPLETE);
             return;
-        }
+        }else {
 
-        Uri uri = Uri.fromParts("package", packageName, null);
-        Intent intent = new Intent();
-        intent.setData(uri);
+            Uri uri = Uri.fromParts("package", packageName, null);
+            Intent intent = new Intent();
+            intent.setData(uri);
 
-        if (Build.VERSION.SDK_INT < 14) {
-            intent.setAction(Intent.ACTION_DELETE);
-        } else {
-            intent.setAction(Intent.ACTION_UNINSTALL_PACKAGE);
-            intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-        }
+            if (Build.VERSION.SDK_INT < 14) {
+                intent.setAction(Intent.ACTION_DELETE);
+            } else {
+                intent.setAction(Intent.ACTION_UNINSTALL_PACKAGE);
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+            }
 
-        try {
-            startActivityForResult(intent, REQUEST_CODE_UNINSTALL);
-        } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "ActivityNotFoundException", e);
-            installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_INTERRUPTED,
-                    "This Android rom does not support ACTION_UNINSTALL_PACKAGE!");
-            finish();
+            try {
+                startActivityForResult(intent, REQUEST_CODE_UNINSTALL);
+            } catch (ActivityNotFoundException e) {
+                Log.e(TAG, "ActivityNotFoundException", e);
+                installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_INTERRUPTED,
+                        "This Android rom does not support ACTION_UNINSTALL_PACKAGE!");
+                finish();
+            }
         }
     }
 

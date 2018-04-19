@@ -28,10 +28,10 @@ import org.fdroid.fdroid.data.App;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.InstalledApp;
 import org.fdroid.fdroid.data.InstalledAppProvider;
-import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
+import org.fdroid.fdroid.installer.DongleInstallManagerService;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
@@ -113,7 +113,7 @@ public class DongleInstallationService extends IntentService {
             Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
             localBroadcastManager.registerReceiver(installReceiver,
                     Installer.getInstallIntentFilter(Uri.parse(apkToInstall.getUrl())));
-            InstallManagerService.queue(this, app, apkToInstall);
+            DongleInstallManagerService.queue(this, app, apkToInstall);
         } else if (operation.equalsIgnoreCase(CheckUpdatesService.UNINSTALL_OPERATION)) {
             uninstallApk();
         } else if (operation.equalsIgnoreCase(CheckUpdatesService.DEVICE_INSTALLED)) {
@@ -254,7 +254,7 @@ public class DongleInstallationService extends IntentService {
     private void startInstall(Apk apk) {
         activeDownloadUrlString = apk.getUrl();
         registerDownloaderReceiver();
-        InstallManagerService.queue(this, app, apk);
+        DongleInstallManagerService.queue(this, app, apk);
     }
 
     private void registerDownloaderReceiver() {
