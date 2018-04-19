@@ -2,13 +2,14 @@ package org.fdroid.fdroid.iris;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Handler;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.fdroid.fdroid.Preferences;
+import org.fdroid.fdroid.Utils;
 import org.fdroid.fdroid.iris.net.GetAppsFromServerDB;
 import org.fdroid.fdroid.iris.net.IOnUpdateResult;
 import org.json.JSONArray;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 
 public class CheckUpdatesService extends IntentService implements IOnUpdateResult {
 
-    private static final String TAG = CheckUpdatesService.class.getName();
+    private static final String TAG = CheckUpdatesService.class.getSimpleName();
     private static final int CODE_POST_REQUEST = 1025;
     public static final String OPERATION = "operation";
     public static final String PKG_NAME = "pkgName";
@@ -34,6 +35,12 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
     public static final String UNINSTALL_OPERATION = "uninstall";
     public static final String DOWNLOAD_OPERATION = "download";
     public static final String INSTALL_OPERATION = "install";
+    public static final String WEBSITE_DOWNLOADED = "1";
+    public static final String DEVICE_DOWNLOADED = "2";
+    public static final String DEVICE_INSTALLED = "3";
+    public static final String NEED_UPDATE = "4";
+    public static final String UNINSTALL = "5";
+    public static final String NONE = "6";
 
     private String activeDownloadUrlString;
     private LocalBroadcastManager localBroadcastManager;
@@ -45,25 +52,22 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         Log.d(TAG, "onHandleIntent: just handling intent");
-        Handler mHandler = new Handler(getMainLooper());
+        PackageManager pk = getApplicationContext().getPackageManager();
         getApps();
     }
 
     public void getApps() {
         String url;
         HashMap<String, String> params = new HashMap<>();
-//        params.put("UserName", Preferences.get().getPrefUsername());
-
-//        for testing
-        params.put("UserName", "najah_child");
-        url = Preferences.get().getHostIp() + "/dashboard/command/getControllerApps";
-
-        Log.d(TAG, "getApps: device = " + Preferences.get().getPrefDeviceType());
-//        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
-//            url = "http://192.168.1.2:8080/dashboard/command/getControllerApps";
-//        } else {
-//            url = "http://192.168.1.2:8080/dashboard/command/getDongleApps";
-//        }
+        params.put("UserName", Preferences.get().getPrefUsername());
+        Utils.debugLog(TAG, "getApps: device = " + Preferences.get().getPrefDeviceType());
+        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
+            url = Preferences.get().getHostIp() + "/dashboard/command/getControllerApps";
+        } else if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+            url = Preferences.get().getHostIp() + "/dashboard/command/getDongleApps";
+        } else {
+            url = Preferences.get().getHostIp() + "/dashboard/command/getControllerApps";
+        }
         Preferences.get().getAllowedAppsURL();
         GetAppsFromServerDB performNetworkRequest = new GetAppsFromServerDB(this, url, params, CODE_POST_REQUEST);
         performNetworkRequest.execute();
@@ -74,8 +78,7 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
 //        ApplicationStatus applicationStatus = new ApplicationStatus();
         ArrayList<ApplicationStatus> applicationStatusArrayList = new ArrayList<>();
 
-        Log.d(TAG, "onResult: ___________________________");
-//        Log.d(TAG, result);
+        Log.d(TAG, "onResult: ");
 
         try {
             JSONArray jsonArray = new JSONArray(result);
@@ -121,30 +124,33 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
         for (ApplicationStatus applicationStatus :
                 applicationStatusArrayList) {
             switch (applicationStatus.getStatus()) {
-                case "1"://website_downloaded
+                case WEBSITE_DOWNLOADED:
                     if (Float.parseFloat(applicationStatus.getVersion()) > 0) {
                         downloadApp(applicationStatus);
-                        Log.d(TAG, "handleApps: download app "+applicationStatus.getApplicationId());
+                        Log.d(TAG, "handleApps: download app " + applicationStatus.getApplicationId());
                     }
                     break;
-                case "2"://device_downloaded
+                case DEVICE_DOWNLOADED:
                     if (Float.parseFloat(applicationStatus.getVersion()) > 0) {
                         installApp(applicationStatus);
                     }
                     break;
-                case "3"://device_installed
+                case DEVICE_INSTALLED:
 //                  doNothing
                     break;
-                case "4"://need_update
+                case NEED_UPDATE:
                     if (Float.parseFloat(applicationStatus.getVersion()) > 0) {
-                        updateApp(applicationStatus);
+//                        updateApp(applicationStatus);
+                        // we can use downloadApp in update status
+                        downloadApp(applicationStatus);
+                        Log.d(TAG, "handleApps: download app " + applicationStatus.getApplicationId());
                     }
                     break;
-                case "5"://uninstall
+                case UNINSTALL:
                     unInstallApp(applicationStatus);
                     //do nothing
                     break;
-                case "6"://none
+                case NONE://none
                     // do nothing
                     break;
                 default:
@@ -172,15 +178,17 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
         startInstallService(applicationStatus, UNINSTALL_OPERATION);
     }
 
+    // TODO: 4/18/2018 create InstallIntentFactory instead of this method
     @NonNull
     private Intent getIntent() {
         Intent installIntent;
+//        installIntent = new Intent(getApplicationContext(), ControllerInstallationService.class);
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
             installIntent = new Intent(getApplicationContext(), DongleInstallationService.class);
         } else if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
             installIntent = new Intent(getApplicationContext(), ControllerInstallationService.class);
         } else {
-            installIntent = new Intent(getApplicationContext(), ControllerInstallationService.class);
+            installIntent = new Intent(getApplicationContext(), DongleInstallationService.class);
         }
         return installIntent;
     }

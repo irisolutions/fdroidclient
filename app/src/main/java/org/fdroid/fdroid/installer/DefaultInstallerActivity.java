@@ -78,11 +78,6 @@ public class DefaultInstallerActivity extends FragmentActivity {
             throw new RuntimeException("Set the data uri to point to an apk location!");
         }
 
-        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
-            Log.d(TAG, "installPackage: " + uri.getPath());
-            SudoInstall.install(uri.getPath());
-        }
-
         // https://code.google.com/p/android/issues/detail?id=205827
         if ((Build.VERSION.SDK_INT < 24)
                 && (!uri.getScheme().equals("file"))) {
@@ -91,6 +86,12 @@ public class DefaultInstallerActivity extends FragmentActivity {
         if ((Build.VERSION.SDK_INT >= 24)
                 && (!uri.getScheme().equals("content"))) {
             throw new RuntimeException("PackageInstaller >= Android N only supports content scheme!");
+        }
+
+        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+            Log.d(TAG, "installPackage: " + uri.getPath());
+            SudoInstall.install(uri.getPath());
+            installer.sendBroadcastInstall(downloadUri, Installer.ACTION_INSTALL_COMPLETE);
         }
 
         Intent intent = new Intent();
@@ -147,6 +148,8 @@ public class DefaultInstallerActivity extends FragmentActivity {
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
             Log.d(TAG, "unInstallPackage: " + packageName);
             SudoInstall.unInstall(packageName);
+            installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_COMPLETE);
+            return;
         }
 
         Uri uri = Uri.fromParts("package", packageName, null);

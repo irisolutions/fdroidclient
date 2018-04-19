@@ -66,12 +66,12 @@ public class ControllerInstallationService extends IntentService {
     public ControllerInstallationService() {
 
         super(DongleInstallationService.class.getSimpleName());
-//        packageManager = getPackageManager();
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        packageManager = getPackageManager();
         Bundle bundle = null;
         if (intent != null) {
             bundle = intent.getExtras();
@@ -86,7 +86,6 @@ public class ControllerInstallationService extends IntentService {
             handleApp(pkgName, version, operation);
         }
     }
-
 
     private void handleApp(String packageName, String versionFromServer, String operation) {
 
@@ -128,7 +127,6 @@ public class ControllerInstallationService extends IntentService {
             return;
         }
 
-
         final Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
         install(apkToInstall);
 
@@ -149,7 +147,6 @@ public class ControllerInstallationService extends IntentService {
             install(apkToInstall);
         }*/
     }
-
 
     class ApkListAdapter extends ArrayAdapter<Apk> {
 
@@ -237,7 +234,6 @@ public class ControllerInstallationService extends IntentService {
         initiateInstall(apk);
     }
 
-
     private void initiateInstall(Apk apk) {
         Installer installer = InstallerFactory.create(this, apk);
         Intent intent = installer.getPermissionScreen();
@@ -247,7 +243,6 @@ public class ControllerInstallationService extends IntentService {
 //            startActivityForResult(intent, REQUEST_PERMISSION_DIALOG);
             return;
         }
-
         startInstall(apk);
     }
 

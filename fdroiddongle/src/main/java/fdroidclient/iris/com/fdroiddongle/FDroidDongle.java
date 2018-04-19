@@ -12,8 +12,7 @@ public class FDroidDongle extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+//        setContentView(R.layout.activity_main);
         Preferences.get().setPrefDeviceType(DONGLE);
 //        Intent intent = new Intent(this, FDroid.class);
 //        startActivity(intent);

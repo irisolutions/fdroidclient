@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -33,11 +32,9 @@ import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
-import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,7 +45,7 @@ import java.util.List;
 
 public class DongleInstallationService extends IntentService {
 
-    private static final String TAG = DongleInstallationService.class.getName();
+    private static final String TAG = ControllerInstallationService.class.getSimpleName();
     private Handler toastHandler;
     private App app;
     private PackageManager packageManager;
@@ -69,34 +66,35 @@ public class DongleInstallationService extends IntentService {
     public DongleInstallationService() {
 
         super(DongleInstallationService.class.getSimpleName());
-//        packageManager = getPackageManager();
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        packageManager = getApplicationContext().getPackageManager();
         Bundle bundle = null;
         if (intent != null) {
             bundle = intent.getExtras();
         }
         if (bundle != null) {
-            String operation = bundle.getString("operation");
-            String pkgName= bundle.getString("pkgName");
-            String version= bundle.getString("version");
+            String operation = bundle.getString(CheckUpdatesService.OPERATION);
+            String pkgName = bundle.getString(CheckUpdatesService.PKG_NAME);
+            String version = bundle.getString(CheckUpdatesService.VERSION);
             Log.d(TAG, "onReceive: operation" + operation);
             Log.d(TAG, "onReceive: pkgname" + pkgName);
             Log.d(TAG, "onHandleIntent: call handle app");
-            handleApp(pkgName,version,operation);
+            handleApp(pkgName, version, operation);
         }
     }
 
-
-
-    private void handleApp(String packageName, String versionFromServer,String operation) {
+    private void handleApp(String packageName, String versionFromServer, String operation) {
 
         app = AppProvider.Helper.findSpecificApp(getContentResolver(), packageName, 1);
-
-       /* if (app.canAndWantToUpdate(getApplicationContext())) {
+        if (app == null) {
+            Log.d(TAG, "handleApp: ---------- app = null");
+            return;
+        }
+         /* if (app.canAndWantToUpdate(getApplicationContext())) {
             updateWanted = true;
         } else {
             updateWanted = false;
@@ -107,12 +105,17 @@ public class DongleInstallationService extends IntentService {
             }
         }*/
 
-        if (app != null) {
+        if (operation.equalsIgnoreCase(CheckUpdatesService.DOWNLOAD_OPERATION)) {
             Log.d(TAG, "handleApp: ---------- " + app.packageName);
             Log.d(TAG, "handleApp: ---------- " + app.repoId);
             installApp(app);
+        } else if (operation.equalsIgnoreCase(CheckUpdatesService.INSTALL_OPERATION)) {
+            Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
+            InstallManagerService.queue(this, app, apkToInstall);
+        } else if (operation.equalsIgnoreCase(CheckUpdatesService.UNINSTALL_OPERATION)) {
+            uninstallApk();
         } else {
-            Log.d(TAG, "handleApp: ---------- app = null");
+            Log.d(TAG, "handleApp: no operation selected or none operation");
         }
     }
 
@@ -123,7 +126,6 @@ public class DongleInstallationService extends IntentService {
             install(apkToInstall);
             return;
         }
-
 
         final Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
         install(apkToInstall);
@@ -145,7 +147,6 @@ public class DongleInstallationService extends IntentService {
             install(apkToInstall);
         }*/
     }
-
 
     class ApkListAdapter extends ArrayAdapter<Apk> {
 
@@ -233,17 +234,15 @@ public class DongleInstallationService extends IntentService {
         initiateInstall(apk);
     }
 
-
     private void initiateInstall(Apk apk) {
-        Installer installer = InstallerFactory.create(this, apk);
-        Intent intent = installer.getPermissionScreen();
-        if (intent != null) {
-            // permission screen required
-            Utils.debugLog(TAG, "permission screen required");
-//            startActivityForResult(intent, REQUEST_PERMISSION_DIALOG);
-            return;
-        }
-
+//        Installer installer = InstallerFactory.create(this, apk);
+//        Intent intent = installer.getPermissionScreen();
+//        if (intent != null) {
+//            // permission screen required
+//            Utils.debugLog(TAG, "permission screen required");
+////            startActivityForResult(intent, REQUEST_PERMISSION_DIALOG);
+//            return;
+//        }
         startInstall(apk);
     }
 
@@ -254,7 +253,7 @@ public class DongleInstallationService extends IntentService {
     }
 
     private void registerDownloaderReceiver() {
-        // TODO: 2/26/2018 handle register download reciever
+        // TODO: 2/26/2018 handle register download receiver
         if (activeDownloadUrlString != null) { // if a download is active
             String url = activeDownloadUrlString;
             localBroadcastManager.registerReceiver(downloadReceiver,
@@ -277,9 +276,12 @@ public class DongleInstallationService extends IntentService {
      * @throws IllegalStateException If neither the {@link PackageManager} or the
      *                               {@link InstalledAppProvider} can't find a reference to the installed apk.
      */
-    @NonNull
     private Apk getInstalledApk() {
         try {
+            if (packageManager.getPackageInfo(app.packageName, 0) == null) {
+                Log.d(TAG, "getInstalledApk: ");
+                return null;
+            }
             PackageInfo pi = packageManager.getPackageInfo(app.packageName, 0);
 
             Apk apk = ApkProvider.Helper.findApkFromAnyRepo(this, pi.packageName, pi.versionCode);
@@ -305,8 +307,15 @@ public class DongleInstallationService extends IntentService {
         if (app.installedApk == null) {
             // TODO ideally, app would be refreshed immediately after install, then this
             // workaround would be unnecessary
-            app.installedApk = getInstalledApk();
+
+            if (getInstalledApk() == null) {
+                Log.d(TAG, "uninstallApk: installed apk = null");
+                return;
+            } else {
+                app.installedApk = getInstalledApk();
+            }
         }
+
 
         Installer installer = InstallerFactory.create(this, app.installedApk);
         Intent intent = installer.getUninstallScreen();
@@ -343,7 +352,6 @@ public class DongleInstallationService extends IntentService {
                 case Installer.ACTION_UNINSTALL_COMPLETE:
 //                    headerFragment.removeProgress();
                     onAppChanged();
-
                     localBroadcastManager.unregisterReceiver(this);
                     break;
                 case Installer.ACTION_UNINSTALL_INTERRUPTED:
@@ -408,8 +416,6 @@ public class DongleInstallationService extends IntentService {
     }
 
 
-
-
     private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -433,7 +439,7 @@ public class DongleInstallationService extends IntentService {
 
                     // Starts the install process one the download is complete.
                     cleanUpFinishedDownload();
-                    changeAppStatus(app.packageName, String.valueOf(2));
+                    // TODO: 4/11/2018 -khaled- enable or disable install reciever -need confirmation from Ayman-
                     localBroadcastManager.registerReceiver(installReceiver,
                             Installer.getInstallIntentFilter(intent.getData()));
                     break;
@@ -468,7 +474,6 @@ public class DongleInstallationService extends IntentService {
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
 //                    headerFragment.removeProgress();
                     localBroadcastManager.unregisterReceiver(this);
-                    changeAppStatus(app.packageName, String.valueOf(3));
                     break;
                 case Installer.ACTION_INSTALL_INTERRUPTED:
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
@@ -502,7 +507,6 @@ public class DongleInstallationService extends IntentService {
                     } catch (PendingIntent.CanceledException e) {
                         Log.e(TAG, "PI canceled", e);
                     }
-
                     break;
                 default:
                     throw new RuntimeException("intent action not handled!");
@@ -521,7 +525,6 @@ public class DongleInstallationService extends IntentService {
         unregisterDownloaderReceiver();
     }
 
-
     private void unregisterDownloaderReceiver() {
         if (localBroadcastManager == null) {
             return;
@@ -529,26 +532,7 @@ public class DongleInstallationService extends IntentService {
         localBroadcastManager.unregisterReceiver(downloadReceiver);
     }
 
-    private void changeAppStatus(String applicationId, String status) {
-        String url;
-        HashMap<String, String> params = new HashMap<>();
-
-        params.put("UserName", Preferences.get().getPrefUsername());
-        params.put("appID", applicationId);
-        params.put("status", status);
-        url = Preferences.get().getHostIp() + "/dashboard/command/changeDongleAppStatus";
-
-        Log.d(TAG, "changeAppStatus:  = " + applicationId);
-
-        PushAppStatusToServer pushAppStatusToServer = new PushAppStatusToServer(url, params, PushAppStatusToServer.CODE_POST_REQUEST);
-        pushAppStatusToServer.execute();
-    }
-
 }
-
-
-
-
 
 
 /*

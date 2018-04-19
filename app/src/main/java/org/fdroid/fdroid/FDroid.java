@@ -148,6 +148,7 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
     }
 
     private void requireRootAccess() {
+        Log.d(TAG, "requireRootAccess: ############### " + Preferences.get().getPrefDeviceType());
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
             try {
                 Runtime.getRuntime().exec("su");

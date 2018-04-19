@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
@@ -338,7 +339,7 @@ public class InstallManagerService extends Service {
                         if (PrivilegedInstaller.isDefault(context)) {
                             cancelNotification(downloadUrl);
                         }
-
+                        Log.d(TAG, "onReceive: app installed" + apkComplete.packageName);
                         PushAppStatusToServer.changeAppStatus(apkComplete.packageName, String.valueOf(3));
                         localBroadcastManager.unregisterReceiver(this);
                         break;
