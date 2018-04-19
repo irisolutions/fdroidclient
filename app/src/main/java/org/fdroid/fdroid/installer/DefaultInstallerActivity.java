@@ -139,10 +139,16 @@ public class DefaultInstallerActivity extends FragmentActivity {
             getPackageManager().getPackageInfo(packageName, 0);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "NameNotFoundException", e);
-            installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_INTERRUPTED,
-                    "Package that is scheduled for uninstall is not installed!");
-            finish();
-            return;
+            // TODO: 4/19/2018 create Default installer for dongle
+            if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+                return;
+            } else {
+                installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_INTERRUPTED,
+                        "Package that is scheduled for uninstall is not installed!");
+                finish();
+                return;
+
+            }
         }
 
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {

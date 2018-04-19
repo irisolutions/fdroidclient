@@ -4,10 +4,10 @@ import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -45,7 +45,7 @@ import java.util.List;
 
 public class DongleInstallationService extends IntentService {
 
-    private static final String TAG = ControllerInstallationService.class.getSimpleName();
+    private static final String TAG = DongleInstallationService.class.getSimpleName();
     private Handler toastHandler;
     private App app;
     private PackageManager packageManager;
@@ -111,9 +111,13 @@ public class DongleInstallationService extends IntentService {
             installApp(app);
         } else if (operation.equalsIgnoreCase(CheckUpdatesService.INSTALL_OPERATION)) {
             Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
+            localBroadcastManager.registerReceiver(installReceiver,
+                    Installer.getInstallIntentFilter(Uri.parse(apkToInstall.getUrl())));
             InstallManagerService.queue(this, app, apkToInstall);
         } else if (operation.equalsIgnoreCase(CheckUpdatesService.UNINSTALL_OPERATION)) {
             uninstallApk();
+        } else if (operation.equalsIgnoreCase(CheckUpdatesService.DEVICE_INSTALLED)) {
+//            checkInstalledStatus();
         } else {
             Log.d(TAG, "handleApp: no operation selected or none operation");
         }
@@ -195,40 +199,41 @@ public class DongleInstallationService extends IntentService {
 //        }
 
         if (!apk.compatible) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.installIncompatible);
-            builder.setPositiveButton(R.string.yes,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-                            initiateInstall(apk);
-                        }
-                    });
-            builder.setNegativeButton(R.string.no,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+            // TODO: 4/19/2018 Khaled : send request to tablet instead
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setMessage(R.string.installIncompatible);
+//            builder.setPositiveButton(R.string.yes,
+//                    new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog,
+//                                            int whichButton) {
+//                            initiateInstall(apk);
+//                        }
+//                    });
+//            builder.setNegativeButton(R.string.no,
+//                    new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog,
+//                                            int whichButton) {
+//                        }
+//                    });
+//            AlertDialog alert = builder.create();
+//            alert.show();
             return;
         }
         if (app.installedSig != null && apk.sig != null
                 && !apk.sig.equals(app.installedSig)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.SignatureMismatch).setPositiveButton(
-                    R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setMessage(R.string.SignatureMismatch).setPositiveButton(
+//                    R.string.ok,
+//                    new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            dialog.cancel();
+//                        }
+//                    });
+//            AlertDialog alert = builder.create();
+//            alert.show();
             return;
         }
         initiateInstall(apk);
@@ -448,9 +453,9 @@ public class DongleInstallationService extends IntentService {
                         String msg = intent.getStringExtra(Downloader.EXTRA_ERROR_MESSAGE)
                                 + " " + intent.getDataString();
 //                        Toast.makeText(context, R.string.download_error, Toast.LENGTH_SHORT).show();
-//                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
                     } else { // user canceled
-//                        Toast.makeText(context, R.string.details_notinstalled, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.details_notinstalled, Toast.LENGTH_LONG).show();
                     }
                     cleanUpFinishedDownload();
                     break;
@@ -485,15 +490,15 @@ public class DongleInstallationService extends IntentService {
                     if (!TextUtils.isEmpty(errorMessage)) {
                         Log.e(TAG, "install aborted with errorMessage: " + errorMessage);
 
-                        String title = String.format(
-                                getString(R.string.install_error_notify_title),
-                                app.name);
+//                        String title = String.format(
+//                                getString(R.string.install_error_notify_title),
+//                                app.name);
 
-                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getApplicationContext());
-                        alertBuilder.setTitle(title);
-                        alertBuilder.setMessage(errorMessage);
-                        alertBuilder.setNeutralButton(android.R.string.ok, null);
-                        alertBuilder.create().show();
+//                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getApplicationContext());
+//                        alertBuilder.setTitle(title);
+//                        alertBuilder.setMessage(errorMessage);
+//                        alertBuilder.setNeutralButton(android.R.string.ok, null);
+//                        alertBuilder.create().show();
                     }
 
                     localBroadcastManager.unregisterReceiver(this);

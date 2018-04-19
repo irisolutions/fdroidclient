@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.fdroid.fdroid.AppDetails;
 import org.fdroid.fdroid.Hasher;
+import org.fdroid.fdroid.Preferences;
 import org.fdroid.fdroid.R;
 import org.fdroid.fdroid.Utils;
 import org.fdroid.fdroid.compat.PackageManagerCompat;
@@ -337,6 +338,9 @@ public class InstallManagerService extends Service {
 
                         PackageManagerCompat.setInstaller(context, getPackageManager(), apkComplete.packageName);
                         if (PrivilegedInstaller.isDefault(context)) {
+                            cancelNotification(downloadUrl);
+                        }
+                        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
                             cancelNotification(downloadUrl);
                         }
                         Log.d(TAG, "onReceive: app installed" + apkComplete.packageName);
