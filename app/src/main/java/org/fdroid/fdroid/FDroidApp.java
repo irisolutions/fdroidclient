@@ -95,6 +95,7 @@ public class FDroidApp extends Application {
     private static final org.spongycastle.jce.provider.BouncyCastleProvider SPONGYCASTLE_PROVIDER;
 
     @SuppressWarnings("unused")
+    public
     BluetoothAdapter bluetoothAdapter;
 
     static {
@@ -196,6 +197,7 @@ public class FDroidApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "onCreate: Fdroid app");
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
@@ -310,8 +312,7 @@ public class FDroidApp extends Application {
             }
             grantUriPermission(packageName, InstallHistoryService.LOG_URI, modeFlags);
         }
-
-        Preferences.get().setHostIp("http://192.168.1.103:8080");
+        Preferences.get().setHostIp("http://192.168.1.104:8080");
     }
 
     /**

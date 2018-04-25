@@ -34,6 +34,7 @@ public class AppListFragmentPagerAdapter extends FragmentPagerAdapter {
         this.parent = parent;
     }
 
+
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         AppListFragment fragment = (AppListFragment) super.instantiateItem(container, position);

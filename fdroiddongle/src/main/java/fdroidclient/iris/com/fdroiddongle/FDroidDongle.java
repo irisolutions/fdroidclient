@@ -1,8 +1,10 @@
 package fdroidclient.iris.com.fdroiddongle;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import org.fdroid.fdroid.FDroid;
 import org.fdroid.fdroid.Preferences;
 
 public class FDroidDongle extends AppCompatActivity {
@@ -14,8 +16,8 @@ public class FDroidDongle extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
         Preferences.get().setPrefDeviceType(DONGLE);
-//        Intent intent = new Intent(this, FDroid.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, FDroid.class);
+        startActivity(intent);
     }
 
     @Override

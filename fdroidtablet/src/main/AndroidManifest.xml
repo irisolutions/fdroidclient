@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="fdroidclient.iris.com.fdroidtablet">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
     <application
         tools:replace="android:icon,android:theme"
         android:description="@string/app_description"
@@ -11,13 +14,14 @@
         android:label="@string/app_name"
         android:allowBackup="true"
         android:supportsRtl="true"
+        android:name="org.fdroid.fdroid.FDroidApp"
         android:theme="@style/AppTheme">
         <activity android:name=".FDroidTablet">
-          <!--  <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
 
         <service android:name=".services.MyFirebaseInstanceIdService">
