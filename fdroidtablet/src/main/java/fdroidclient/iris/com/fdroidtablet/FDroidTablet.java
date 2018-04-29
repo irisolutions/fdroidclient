@@ -86,6 +86,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
     private static final String ACTION_ADD_REPO = "org.fdroid.fdroid.FDroid.ACTION_ADD_REPO";
 
     private static final String ADD_REPO_INTENT_HANDLED = "addRepoIntentHandled";
+    public static final String IrisStoreUrl = "http://192.168.1.104:8080/store/";
 
     private FDroidApp fdroidApp;
 
@@ -113,11 +114,8 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
     private WebView myWebView;
     private boolean canGoBack;
-    private static final String userName = "najah_child";
-    private static final String userPassword = "najah_child";
     private boolean correctUserName;
     private static final int CODE_POST_REQUEST = 1025;
-
 
 
     @Override
@@ -136,9 +134,8 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
 //        getTabManager().createTabs();
 
-        // Start a search by just typing
+        // Start a search by just typin     g
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
-
 
         Intent intent = getIntent();
         handleSearchOrAppViewIntent(intent);
@@ -518,9 +515,8 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
             FDroidTablet.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                    // TODO: 4/25/2018 khaled : RefreshWebView
-//                    refreshUpdateTabLabel();
+                    // refresh web view
+                    myWebView.reload();
                 }
             });
         }
@@ -539,11 +535,11 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         myWebView = (WebView) findViewById(R.id.webView);
 
 //        myWebView.loadUrl("http://54.89.24.164/IrisCentral/web/app_dev.php/store/");
-        myWebView.loadUrl("http://192.168.1.104:8080/store/");
+        myWebView.loadUrl(IrisStoreUrl);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         myWebView.setWebViewClient(new MyWebViewClient());
-        myWebView.addJavascriptInterface(new UserJavaScriptInterface(),"UserJavaScriptInterface");
+        myWebView.addJavascriptInterface(new UserJavaScriptInterface(), "UserJavaScriptInterface");
 //        myWebView.getSettings().setUserAgentString("Android");
 
 //        if (Build.VERSION.SDK_INT  < Build.VERSION_CODES.KITKAT) {
@@ -591,7 +587,6 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
             view.loadUrl(url);
             return false;
         }
-
     }
 
     // Prevent the back-button from closing the app
@@ -623,28 +618,15 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         @Override
         public void onPageFinished(android.webkit.WebView view, String url) {
             super.onPageFinished(view, url);
-
             Log.d(TAG, "onPageFinished: finished page with url = " + url);
-/*
-            if (Build.VERSION.SDK_INT >= 19) {
-                Log.d(TAG, "onPageFinished: start evaluate js code");
-                view.evaluateJavascript(jsGetByClass, new ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String s) {
-                        Log.d(TAG, "onReceiveValue" + s);
-                    }
-                });
-            }
-            view.loadUrl("javascript:(function() { " +
-                    jsInjectCode + "})()");*/
         }
     }
 
-    public class UserJavaScriptInterface{
+    public class UserJavaScriptInterface {
 
         @JavascriptInterface
         public void signIn(String userName, String password) {
-            userSignIn(userName,password);
+            userSignIn(userName, password);
         }
 
         @JavascriptInterface
@@ -656,29 +638,36 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
     private void userSignOut() {
         Preferences.get().setPrefUsername("");
         Preferences.get().setPrefPassword("");
-        // TODO: 4/25/2018 send request to delete token
+        unRegisterUserToken();
         Log.d(TAG, "userSignOut: sign out");
     }
 
     private void userSignIn(String userName, String password) {
         // TODO: 4/25/2018 check username and password from server
-        Log.d(TAG, "userSignIn: user name = "+userName+"password = "+password);
+        Log.d(TAG, "userSignIn: user name = " + userName + "password = " + password);
         Preferences.get().setPrefUsername(userName);
         Preferences.get().setPrefPassword(password);
         registerUserToken();
-
         UpdateService.updateNow(getBaseContext());
     }
-    private void registerUserToken() {
 
+    private void registerUserToken() {
+        HandleTokenRegistration("/dashboard/command/addNewToken");
+    }
+
+    private void unRegisterUserToken() {
+        HandleTokenRegistration("/dashboard/command/deleteToken");
+    }
+
+    private void HandleTokenRegistration(String tokenAction) {
         HashMap<String, String> params = new HashMap<>();
         params.put("Token", Preferences.get().getPrefFCMToken());
         params.put("UserName", Preferences.get().getPrefUsername());
         params.put("Type", Preferences.get().getPrefDeviceType());
-
-        String url = "http://192.168.1.39:8000/dashboard/command/addNewToken";
-
-        PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url,params,CODE_POST_REQUEST);
+        String url = Preferences.get().getHostIp() + tokenAction;
+        PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url, params, CODE_POST_REQUEST);
         performNetworkRequest.execute();
     }
+
+
 }
