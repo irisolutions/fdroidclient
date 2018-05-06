@@ -438,7 +438,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receiver.TokenReceiver">
+        <receiver android:name=".iris.TokenReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="fdroidclient.iris.com.fdroiddongle.services" />

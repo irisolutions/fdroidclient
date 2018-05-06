@@ -10,6 +10,7 @@ import android.util.Log;
 
 import org.fdroid.fdroid.Preferences;
 import org.fdroid.fdroid.Utils;
+import org.fdroid.fdroid.iris.net.ConstantURLs;
 import org.fdroid.fdroid.iris.net.GetAppsFromServerDB;
 import org.fdroid.fdroid.iris.net.IOnUpdateResult;
 import org.json.JSONArray;
@@ -60,13 +61,14 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
         String url;
         HashMap<String, String> params = new HashMap<>();
         params.put("UserName", Preferences.get().getPrefUsername());
+        ///IrisCentral/web/app_dev.php/dashboard/command/addNewToken
         Utils.debugLog(TAG, "getApps: device = " + Preferences.get().getPrefDeviceType());
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
-            url = Preferences.get().getHostIp() + "/dashboard/command/getControllerApps";
+            url = ConstantURLs.GET_CONTROLLER_APPS;
         } else if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
-            url = Preferences.get().getHostIp() + "/dashboard/command/getDongleApps";
+            url = ConstantURLs.GET_Dongle_APPS;
         } else {
-            url = Preferences.get().getHostIp() + "/dashboard/command/getControllerApps";
+            url = ConstantURLs.GET_CONTROLLER_APPS;
         }
         Preferences.get().getAllowedAppsURL();
         GetAppsFromServerDB performNetworkRequest = new GetAppsFromServerDB(this, url, params, CODE_POST_REQUEST);

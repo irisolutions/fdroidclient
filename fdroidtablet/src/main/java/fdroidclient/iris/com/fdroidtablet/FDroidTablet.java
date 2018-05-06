@@ -1,6 +1,6 @@
 package fdroidclient.iris.com.fdroidtablet;/*
- * Copyright (C) 2010-12  Ciaran Gultnieks, ciaran@ciarang.com
- * Copyright (C) 2009  Roberto Jacinto, roberto.jacinto@caixamagica.pt
+ * Copyright (CHANGE_CONTROLLER_APP_STATUS) 2010-12  Ciaran Gultnieks, ciaran@ciarang.com
+ * Copyright (CHANGE_CONTROLLER_APP_STATUS) 2009  Roberto Jacinto, roberto.jacinto@caixamagica.pt
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,14 +62,15 @@ import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
 import org.fdroid.fdroid.iris.CheckUpdatesService;
 import org.fdroid.fdroid.iris.UpdatesScheduler;
+import org.fdroid.fdroid.iris.net.ConstantURLs;
 import org.fdroid.fdroid.iris.net.PerformNetworkRequest;
-import org.fdroid.fdroid.receiver.TokenReceiver;
+import org.fdroid.fdroid.iris.net.PushDownloadNotification;
+import org.fdroid.fdroid.iris.TokenReceiver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
 import org.fdroid.fdroid.views.swap.SwapWorkflowActivity;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 
@@ -86,7 +87,8 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
     private static final String ACTION_ADD_REPO = "org.fdroid.fdroid.FDroid.ACTION_ADD_REPO";
 
     private static final String ADD_REPO_INTENT_HANDLED = "addRepoIntentHandled";
-    public static final String IrisStoreUrl = "http://192.168.1.104:8080/store/";
+
+    private String lastUrl = "http://18.236.165.209/IrisCentral/web/app_dev.php/store/";
 
     private FDroidApp fdroidApp;
 
@@ -157,8 +159,8 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
                 Toast.LENGTH_LONG).show();
 
 
-//        updatesScheduler = new UpdatesScheduler();
-//        updatesScheduler.scheduleUpdates(getApplicationContext());
+        updatesScheduler = new UpdatesScheduler();
+        updatesScheduler.scheduleUpdates(getApplicationContext());
 //        This is just for testing use above comment instead
         Intent i = new Intent(getApplicationContext(), CheckUpdatesService.class);
         getApplicationContext().startService(i);
@@ -167,22 +169,12 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         // Re-enable once it can be disabled via a setting
         // See https://gitlab.com/fdroid/fdroidclient/issues/435
         //
-        // if (UpdateService.isNetworkAvailableForUpdate(this)) {
-        //     UpdateService.updateNow(this);
-        // }
-        requireRootAccess();
+//         if (UpdateService.isNetworkAvailableForUpdate(this)) {
+//             UpdateService.updateNow(this);
+//         }
+//        requireRootAccess();
     }
 
-    private void requireRootAccess() {
-        Log.d(TAG, "requireRootAccess: ############### " + Preferences.get().getPrefDeviceType());
-        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
-            try {
-                Runtime.getRuntime().exec("su");
-            } catch (IOException e) {
-                Log.e(TAG, "onCreate: ", e);
-            }
-        }
-    }
 
     private void performSearch(String query) {
         if (searchMenuItem == null) {
@@ -516,7 +508,6 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
                 @Override
                 public void run() {
                     // refresh web view
-                    myWebView.reload();
                 }
             });
         }
@@ -535,11 +526,12 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         myWebView = (WebView) findViewById(R.id.webView);
 
 //        myWebView.loadUrl("http://54.89.24.164/IrisCentral/web/app_dev.php/store/");
-        myWebView.loadUrl(IrisStoreUrl);
+        myWebView.loadUrl(ConstantURLs.IrisStoreUrl);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         myWebView.setWebViewClient(new MyWebViewClient());
         myWebView.addJavascriptInterface(new UserJavaScriptInterface(), "UserJavaScriptInterface");
+//        myWebView.getSettings().setUserAgentString("Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
 //        myWebView.getSettings().setUserAgentString("Android");
 
 //        if (Build.VERSION.SDK_INT  < Build.VERSION_CODES.KITKAT) {
@@ -610,6 +602,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
         @Override
         public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
+            lastUrl = url;
             view.loadUrl(url);
             Log.d(TAG, "shouldOverrideUrlLoading: view url" + url);
             return false;
@@ -626,6 +619,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
         @JavascriptInterface
         public void signIn(String userName, String password) {
+            Log.d(TAG, "signIn: username = " + userName + "password" + password);
             userSignIn(userName, password);
         }
 
@@ -649,25 +643,29 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         Preferences.get().setPrefPassword(password);
         registerUserToken();
         UpdateService.updateNow(getBaseContext());
+        PushDownloadNotification.pushAppIDNotification("com.uberspot.a2048");
     }
 
     private void registerUserToken() {
-        HandleTokenRegistration("/dashboard/command/addNewToken");
+        HandleTokenRegistration(ConstantURLs.ADD_NEW_TOKEN);
     }
 
     private void unRegisterUserToken() {
-        HandleTokenRegistration("/dashboard/command/deleteToken");
+        HandleTokenRegistration(ConstantURLs.DELETE_TOKEN);
     }
 
-    private void HandleTokenRegistration(String tokenAction) {
+    private void HandleTokenRegistration(String url) {
         HashMap<String, String> params = new HashMap<>();
+        Log.d(TAG, "HandleTokenRegistration: Token" + Preferences.get().getPrefFCMToken());
+        Log.d(TAG, "HandleTokenRegistration: UserName" + Preferences.get().getPrefUsername());
+        Log.d(TAG, "HandleTokenRegistration: Type" + Preferences.get().getPrefDeviceType());
+
         params.put("Token", Preferences.get().getPrefFCMToken());
         params.put("UserName", Preferences.get().getPrefUsername());
         params.put("Type", Preferences.get().getPrefDeviceType());
-        String url = Preferences.get().getHostIp() + tokenAction;
+        Log.d(TAG, "HandleTokenRegistration: url = "+url);
         PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url, params, CODE_POST_REQUEST);
         performNetworkRequest.execute();
     }
-
 
 }

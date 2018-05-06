@@ -50,9 +50,8 @@ import org.fdroid.fdroid.compat.TabManager;
 import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
-import org.fdroid.fdroid.iris.CheckUpdatesService;
 import org.fdroid.fdroid.iris.UpdatesScheduler;
-import org.fdroid.fdroid.receiver.TokenReceiver;
+import org.fdroid.fdroid.iris.TokenReceiver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
@@ -132,18 +131,18 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
                 Toast.LENGTH_LONG).show();
 
 
-//        updatesScheduler = new UpdatesScheduler();
-//        updatesScheduler.scheduleUpdates(getApplicationContext());
-//        This is just for testing use above comment instead
-        Intent i = new Intent(getApplicationContext(), CheckUpdatesService.class);
-        getApplicationContext().startService(i);
+        updatesScheduler = new UpdatesScheduler();
+        updatesScheduler.scheduleUpdates(getApplicationContext());
+////        This is just for testing use above comment instead
+//        Intent i = new Intent(getApplicationContext(), CheckUpdatesService.class);
+//        getApplicationContext().startService(i);
 
 
         // Re-enable once it can be disabled via a setting
         // See https://gitlab.com/fdroid/fdroidclient/issues/435
         //
-        // if (UpdateService.isNetworkAvailableForUpdate(this)) {
-        //     UpdateService.updateNow(this);
+//         if (UpdateService.isNetworkAvailableForUpdate(this)) {
+//             UpdateService.updateNow(this);
         // }
         requireRootAccess();
     }

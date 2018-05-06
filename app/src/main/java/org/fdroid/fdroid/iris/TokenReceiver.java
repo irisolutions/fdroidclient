@@ -1,4 +1,4 @@
-package org.fdroid.fdroid.receiver;
+package org.fdroid.fdroid.iris;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.fdroid.fdroid.iris.DongleInstallationService;
 import org.fdroid.fdroid.Preferences;
 
 /**
@@ -43,11 +42,18 @@ public class TokenReceiver extends BroadcastReceiver {
                 Log.d(TAG, "onReceive: message received" + message);
                 Log.d(TAG, "onReceive: title received" + title);
                 Toast.makeText(context, "Message received" + title + "\n" + message, Toast.LENGTH_SHORT).show();
-                startService(context, message, title);
+                DoUpdate(context);
+//                startService(context, message, title);
             } else {
                 Log.d(TAG, "onReceive: no bundles");
             }
         }
+    }
+
+    private void DoUpdate(Context context) {
+//        This is just for testing use above comment instead
+        Intent i = new Intent(context, CheckUpdatesService.class);
+        context.startService(i);
     }
 
     private void startService(Context context, String message, String title) {

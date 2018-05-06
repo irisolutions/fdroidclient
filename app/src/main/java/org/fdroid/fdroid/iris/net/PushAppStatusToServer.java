@@ -19,6 +19,7 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
     private static final int CODE_GET_REQUEST = 1024;
     public static final int CODE_POST_REQUEST = 1025;
     private static final String TAG = PushAppStatusToServer.class.getName();
+
     //the url where we need to send the request
     String url;
 
@@ -72,18 +73,18 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
     }
 
     public static void changeAppStatus(String applicationId, String status) {
-        String url = Preferences.get().getHostIp() + "/dashboard/command/changeControllerAppStatus";
+        String url = ConstantURLs.CHANGE_CONTROLLER_APP_STATUS;
         HashMap<String, String> params = new HashMap<>();
 
         params.put("UserName", Preferences.get().getPrefUsername());
         params.put("appID", applicationId);
         params.put("status", status);
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
-            url = Preferences.get().getHostIp() + "/dashboard/command/changeControllerAppStatus";
+            url = ConstantURLs.CHANGE_CONTROLLER_APP_STATUS;
             Log.d(TAG, "changeAppStatus: tablet");
         } else if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
             Log.d(TAG, "changeAppStatus: dongle");
-            url = Preferences.get().getHostIp() + "/dashboard/command/changeDongleAppStatus";
+            url = ConstantURLs.CHANGE_Dongle_APP_STATUS;
         }
 
         Log.d(TAG, "changeAppStatus:  = " + applicationId);

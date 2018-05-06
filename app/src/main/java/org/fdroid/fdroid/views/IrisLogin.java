@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,12 +14,14 @@ import android.widget.Toast;
 import org.fdroid.fdroid.Preferences;
 import org.fdroid.fdroid.R;
 import org.fdroid.fdroid.UpdateService;
+import org.fdroid.fdroid.iris.net.ConstantURLs;
 import org.fdroid.fdroid.iris.net.PerformNetworkRequest;
 
 import java.util.HashMap;
 
 public class IrisLogin extends AppCompatActivity {
 
+    private static final String TAG = IrisLogin.class.getSimpleName();
     private static EditText username;
     private static EditText password;
     private static TextView attempt;
@@ -112,6 +115,7 @@ public class IrisLogin extends AppCompatActivity {
 
                             registerUserToken();
 
+
                             UpdateService.updateNow(getBaseContext());
 
                             // trigger an update
@@ -124,15 +128,18 @@ public class IrisLogin extends AppCompatActivity {
     }
 
     private void registerUserToken() {
-
         HashMap<String, String> params = new HashMap<>();
+        Log.d(TAG, "HandleTokenRegistration: Token" + Preferences.get().getPrefFCMToken());
+        Log.d(TAG, "HandleTokenRegistration: UserName" + Preferences.get().getPrefUsername());
+        Log.d(TAG, "HandleTokenRegistration: Type" + Preferences.get().getPrefDeviceType());
+
         params.put("Token", Preferences.get().getPrefFCMToken());
         params.put("UserName", Preferences.get().getPrefUsername());
         params.put("Type", Preferences.get().getPrefDeviceType());
-
-        String url = "http://192.168.1.39:8000/dashboard/command/addNewToken";
-
-        PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url,params,CODE_POST_REQUEST);
+        String url = ConstantURLs.ADD_NEW_TOKEN;
+        Log.d(TAG, "HandleTokenRegistration: url = "+url);
+        PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url, params, CODE_POST_REQUEST);
         performNetworkRequest.execute();
     }
+
 }
