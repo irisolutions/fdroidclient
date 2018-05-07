@@ -6,6 +6,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.fdroid.fdroid.iris.net.ConstantURLs;
+
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
@@ -368,7 +370,7 @@ public final class Preferences implements SharedPreferences.OnSharedPreferenceCh
         if ( user.isEmpty() || pass.isEmpty())
             return null;
 
-        String host    = "http://54.89.24.164";
+        String host    = ConstantURLs.HOST_IP_ADDRESS;
         String baseUrl = "IrisCentral/web/app_dev.php/dashboard/command/appList";
 
         // ToDo: use password as well

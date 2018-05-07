@@ -88,7 +88,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
     private static final String ADD_REPO_INTENT_HANDLED = "addRepoIntentHandled";
 
-    private String lastUrl = "http://18.236.165.209/IrisCentral/web/app_dev.php/store/";
+    private String lastUrl = "http://34.217.120.206/IrisCentral/web/app_dev.php/store/";
 
     private FDroidApp fdroidApp;
 
@@ -525,12 +525,14 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
         myWebView = (WebView) findViewById(R.id.webView);
 
-//        myWebView.loadUrl("http://54.89.24.164/IrisCentral/web/app_dev.php/store/");
         myWebView.loadUrl(ConstantURLs.IrisStoreUrl);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         myWebView.setWebViewClient(new MyWebViewClient());
         myWebView.addJavascriptInterface(new UserJavaScriptInterface(), "UserJavaScriptInterface");
+        myWebView.getSettings().setAppCacheEnabled(false);
+        myWebView.getSettings().setAppCacheMaxSize(1);
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 //        myWebView.getSettings().setUserAgentString("Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
 //        myWebView.getSettings().setUserAgentString("Android");
 
