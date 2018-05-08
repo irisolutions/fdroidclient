@@ -6,8 +6,6 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.fdroid.fdroid.iris.CheckUpdatesService;
-
 import java.util.Map;
 
 import fdroidclient.iris.com.fdroidtablet.FDroidTablet;
@@ -63,10 +61,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
-    private void startUpdateService() {
-        Intent i = new Intent(getApplicationContext(), CheckUpdatesService.class);
-        getApplicationContext().startService(i);
-    }
+//    private void startUpdateService() {
+//        Intent i = new Intent(getApplicationContext(), CheckUpdatesService.class);
+//        getApplicationContext().startService(i);
+//    }
 
     private void sendTokenToBroadcast(String message, String title) {
         Intent intent = new Intent(NOTIFICATION);

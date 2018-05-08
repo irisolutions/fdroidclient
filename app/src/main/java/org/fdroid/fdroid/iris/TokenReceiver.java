@@ -31,30 +31,32 @@ public class TokenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
-        Log.d(TAG, "onReceive: ========================action = "+intent.getAction());
         Log.d(TAG, "onReceive: receive message from FCM");
-        if (bundle != null) {
-            int resultCode = bundle.getInt(RESULT_CODE);
-            if (resultCode == TOKEN_CODE) {
-                String token = bundle.getString("token");
-                String type = bundle.getString("type");
-                Preferences.get().setPrefFCMToken(token);
-                Preferences.get().setPrefDeviceType(type);
-                if (!Preferences.get().getPrefUsername().equalsIgnoreCase("")) {
-                    registerUserToken();
-                }
-                Log.d(TAG, "onReceive: Token received" + token);
-                Toast.makeText(context, "Token received" + token, Toast.LENGTH_SHORT).show();
-            } else if (resultCode == MSG_CODE) {
-                String message = bundle.getString(MESSAGE);
-                String title = bundle.getString(TITLE);
-                Log.d(TAG, "onReceive: message received" + message);
-                Log.d(TAG, "onReceive: title received" + title);
-                Toast.makeText(context, "Message received" + title + "\n" + message, Toast.LENGTH_SHORT).show();
-                DoUpdate(context);
+        if(intent.getAction().equalsIgnoreCase("fdroidclient.iris.com.fdroidtablet.services")||
+                intent.getAction().equalsIgnoreCase("fdroidclient.iris.com.fdroiddongle.services")) {
+            if (bundle != null) {
+                int resultCode = bundle.getInt(RESULT_CODE);
+                if (resultCode == TOKEN_CODE) {
+                    String token = bundle.getString("token");
+                    String type = bundle.getString("type");
+                    Preferences.get().setPrefFCMToken(token);
+                    Preferences.get().setPrefDeviceType(type);
+                    if (!Preferences.get().getPrefUsername().equalsIgnoreCase("")) {
+                        registerUserToken();
+                    }
+                    Log.d(TAG, "onReceive: Token received" + token);
+                    Toast.makeText(context, "Token received" + token, Toast.LENGTH_SHORT).show();
+                } else if (resultCode == MSG_CODE) {
+                    String message = bundle.getString(MESSAGE);
+                    String title = bundle.getString(TITLE);
+                    Log.d(TAG, "onReceive: message received" + message);
+                    Log.d(TAG, "onReceive: title received" + title);
+                    Toast.makeText(context, "Message received" + title + "\n" + message, Toast.LENGTH_SHORT).show();
+                    DoUpdate(context);
 //                startService(context, message, title);
-            } else {
-                Log.d(TAG, "onReceive: no bundles");
+                } else {
+                    Log.d(TAG, "onReceive: no bundles");
+                }
             }
         }
     }
@@ -65,12 +67,6 @@ public class TokenReceiver extends BroadcastReceiver {
         context.startService(i);
     }
 
-    private void startService(Context context, String message, String title) {
-        Intent intent = new Intent(context, DongleInstallationService.class);
-        intent.putExtra(MESSAGE, message);
-        intent.putExtra(TITLE, title);
-        context.startService(intent);
-    }
     private void registerUserToken() {
         HashMap<String, String> params = new HashMap<>();
         Log.d(TAG, "HandleTokenRegistration: Token" + Preferences.get().getPrefFCMToken());

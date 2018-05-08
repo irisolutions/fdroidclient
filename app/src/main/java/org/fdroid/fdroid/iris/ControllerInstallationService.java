@@ -218,17 +218,18 @@ public class ControllerInstallationService extends IntentService {
         }
         if (app.installedSig != null && apk.sig != null
                 && !apk.sig.equals(app.installedSig)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.SignatureMismatch).setPositiveButton(
-                    R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+            // TODO: 5/8/2018 handle this case
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setMessage(R.string.SignatureMismatch).setPositiveButton(
+//                    R.string.ok,
+//                    new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            dialog.cancel();
+//                        }
+//                    });
+//            AlertDialog alert = builder.create();
+//            alert.show();
             return;
         }
         initiateInstall(apk);
@@ -433,7 +434,7 @@ public class ControllerInstallationService extends IntentService {
 //                    }
                     break;
                 case Downloader.ACTION_COMPLETE:
-                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_PROGRESS");
+                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_COMPLETE");
 
                     // Starts the install process one the download is complete.
                     cleanUpFinishedDownload();

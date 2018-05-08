@@ -19,6 +19,7 @@ import org.fdroid.fdroid.data.InstalledAppProviderService;
 public class PackageManagerReceiver extends BroadcastReceiver {
     private static final String TAG = "PackageManagerReceiver";
 
+    // TODO: 5/8/2018 handle package manager here
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent != null) {

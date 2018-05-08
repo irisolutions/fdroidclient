@@ -496,9 +496,9 @@
         <service
             android:name=".installer.InstallManagerService"
             android:exported="false" />
-        <service
-            android:name=".installer.DongleInstallManagerService"
-            android:exported="false" />
+        <!--<service-->
+            <!--android:name=".installer.DongleInstallManagerService"-->
+            <!--android:exported="false" />-->
         <service
             android:name=".installer.InstallHistoryService"
             android:exported="false" />

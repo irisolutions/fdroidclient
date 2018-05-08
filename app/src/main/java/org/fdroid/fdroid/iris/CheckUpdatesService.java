@@ -61,7 +61,6 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
         String url;
         HashMap<String, String> params = new HashMap<>();
         params.put("UserName", Preferences.get().getPrefUsername());
-        ///IrisCentral/web/app_dev.php/dashboard/command/addNewToken
         Utils.debugLog(TAG, "getApps: device = " + Preferences.get().getPrefDeviceType());
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("tablet")) {
             url = ConstantURLs.GET_CONTROLLER_APPS;
@@ -70,16 +69,14 @@ public class CheckUpdatesService extends IntentService implements IOnUpdateResul
         } else {
             url = ConstantURLs.GET_CONTROLLER_APPS;
         }
-        Preferences.get().getAllowedAppsURL();
+//        Preferences.get().getAllowedAppsURL();
         GetAppsFromServerDB performNetworkRequest = new GetAppsFromServerDB(this, url, params, CODE_POST_REQUEST);
         performNetworkRequest.execute();
     }
 
     @Override
     public void onResult(String result) {
-//        ApplicationStatus applicationStatus = new ApplicationStatus();
         ArrayList<ApplicationStatus> applicationStatusArrayList = new ArrayList<>();
-
         Log.d(TAG, "onResult: ");
 
         try {

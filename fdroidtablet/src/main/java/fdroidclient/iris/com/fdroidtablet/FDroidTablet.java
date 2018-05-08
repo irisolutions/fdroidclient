@@ -88,7 +88,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
     private static final String ADD_REPO_INTENT_HANDLED = "addRepoIntentHandled";
 
-    private String lastUrl = "http://34.217.120.206/IrisCentral/web/app_dev.php/store/";
+    private String lastUrl = ConstantURLs.HOST_IP_ADDRESS + "/IrisCentral/web/app_dev.php/store/";
 
     private FDroidApp fdroidApp;
 
@@ -665,7 +665,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         params.put("Token", Preferences.get().getPrefFCMToken());
         params.put("UserName", Preferences.get().getPrefUsername());
         params.put("Type", Preferences.get().getPrefDeviceType());
-        Log.d(TAG, "HandleTokenRegistration: url = "+url);
+        Log.d(TAG, "HandleTokenRegistration: url = " + url);
         PerformNetworkRequest performNetworkRequest = new PerformNetworkRequest(url, params, CODE_POST_REQUEST);
         performNetworkRequest.execute();
     }

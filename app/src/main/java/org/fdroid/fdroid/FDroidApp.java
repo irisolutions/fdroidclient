@@ -56,6 +56,7 @@ import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.InstalledAppProviderService;
 import org.fdroid.fdroid.data.Repo;
 import org.fdroid.fdroid.installer.InstallHistoryService;
+import org.fdroid.fdroid.iris.net.ConstantURLs;
 import org.fdroid.fdroid.net.IconDownloader;
 import org.fdroid.fdroid.net.WifiStateChangeService;
 
@@ -313,7 +314,7 @@ public class FDroidApp extends Application {
             grantUriPermission(packageName, InstallHistoryService.LOG_URI, modeFlags);
         }
 //        Preferences.get().setHostIp("http://18.236.165.209:80");
-        Preferences.get().setHostIp("http://34.217.120.206:80");
+        Preferences.get().setHostIp(ConstantURLs.HOST_IP_ADDRESS);
     }
 
     /**

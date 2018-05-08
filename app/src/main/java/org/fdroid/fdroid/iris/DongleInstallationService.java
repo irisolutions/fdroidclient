@@ -28,14 +28,16 @@ import org.fdroid.fdroid.data.App;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.InstalledApp;
 import org.fdroid.fdroid.data.InstalledAppProvider;
+import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
-import org.fdroid.fdroid.installer.DongleInstallManagerService;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
 import java.util.List;
+
+//import org.fdroid.fdroid.installer.DongleInstallManagerService;
 
 /**
  * Created by Khaled on 2/22/2018.
@@ -113,7 +115,7 @@ public class DongleInstallationService extends IntentService {
             Apk apkToInstall = ApkProvider.Helper.findApkFromAnyRepo(getApplicationContext(), app.packageName, app.suggestedVersionCode);
             localBroadcastManager.registerReceiver(installReceiver,
                     Installer.getInstallIntentFilter(Uri.parse(apkToInstall.getUrl())));
-            DongleInstallManagerService.queue(this, app, apkToInstall);
+            InstallManagerService.queue(this, app, apkToInstall);
         } else if (operation.equalsIgnoreCase(CheckUpdatesService.UNINSTALL_OPERATION)) {
             uninstallApk();
         } else if (operation.equalsIgnoreCase(CheckUpdatesService.DEVICE_INSTALLED)) {
@@ -254,7 +256,7 @@ public class DongleInstallationService extends IntentService {
     private void startInstall(Apk apk) {
         activeDownloadUrlString = apk.getUrl();
         registerDownloaderReceiver();
-        DongleInstallManagerService.queue(this, app, apk);
+        InstallManagerService.queue(this, app, apk);
     }
 
     private void registerDownloaderReceiver() {
@@ -440,7 +442,7 @@ public class DongleInstallationService extends IntentService {
 //                    }
                     break;
                 case Downloader.ACTION_COMPLETE:
-                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_PROGRESS");
+                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_COMPLETE");
 
                     // Starts the install process one the download is complete.
                     cleanUpFinishedDownload();
@@ -476,12 +478,12 @@ public class DongleInstallationService extends IntentService {
 //                    headerFragment.showIndeterminateProgress(getString(R.string.installing));
                     break;
                 case Installer.ACTION_INSTALL_COMPLETE:
-                    Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
+                    Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_COMPLETE ");
 //                    headerFragment.removeProgress();
                     localBroadcastManager.unregisterReceiver(this);
                     break;
                 case Installer.ACTION_INSTALL_INTERRUPTED:
-                    Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_STARTED ");
+                    Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_INTERRUPTED ");
 //                    headerFragment.removeProgress();
                     onAppChanged();
                     String errorMessage =

@@ -51,7 +51,6 @@ import org.fdroid.fdroid.data.Repo;
 import org.fdroid.fdroid.data.Schema.AppMetadataTable;
 import org.fdroid.fdroid.localrepo.SwapService;
 import org.fdroid.fdroid.net.Downloader;
-import org.fdroid.fdroid.net.DownloaderService;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -309,8 +308,8 @@ public class SwapAppsView extends ListView implements
                     String urlString = apk.getUrl();
 
                     // TODO unregister receivers? or will they just die with this instance
-                    localBroadcastManager.registerReceiver(downloadReceiver,
-                            DownloaderService.getIntentFilter(urlString));
+//                    localBroadcastManager.registerReceiver(downloadReceiver,
+//                            DownloaderService.getIntentFilter(urlString));
 
                     // NOTE: Instead of continually unregistering and re-registering the observer
                     // (with a different URI), this could equally be done by only having one
