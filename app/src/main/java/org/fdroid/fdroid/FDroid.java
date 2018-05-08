@@ -25,7 +25,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -51,7 +50,6 @@ import org.fdroid.fdroid.compat.UriCompat;
 import org.fdroid.fdroid.data.AppProvider;
 import org.fdroid.fdroid.data.NewRepoConfig;
 import org.fdroid.fdroid.iris.UpdatesScheduler;
-import org.fdroid.fdroid.iris.TokenReceiver;
 import org.fdroid.fdroid.views.AppListFragmentPagerAdapter;
 import org.fdroid.fdroid.views.IrisLogin;
 import org.fdroid.fdroid.views.ManageReposActivity;
@@ -89,11 +87,7 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
 
     @Nullable
     private String pendingSearchQuery;
-    public static final String DONGLE_SERVICE_ACTION = "fdroidclient.iris.com.fdroiddongle.services";
-    public static final String TABLET_SERVICE_ACTION = "fdroidclient.iris.com.fdroidtablet.services";
-
     private UpdatesScheduler updatesScheduler;
-    private TokenReceiver tokenReceiver = new TokenReceiver();
 
 
     @Override
@@ -177,11 +171,6 @@ public class FDroid extends AppCompatActivity implements SearchView.OnQueryTextL
         // AppDetails and RepoDetailsActivity set different NFC actions, so reset here
         NfcHelper.setAndroidBeam(this, getApplication().getPackageName());
 
-        IntentFilter filterTokenRefresh = new IntentFilter();
-        filterTokenRefresh.addAction(DONGLE_SERVICE_ACTION);
-        filterTokenRefresh.addAction(DONGLE_SERVICE_ACTION);
-        filterTokenRefresh.addAction(TABLET_SERVICE_ACTION);
-        registerReceiver(tokenReceiver, filterTokenRefresh);
         checkForAddRepoIntent(getIntent());
     }
 
