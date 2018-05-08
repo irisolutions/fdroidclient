@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
@@ -109,6 +110,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
     public static final String TABLET = "tablet";
 
 
+    SwipeRefreshLayout swipe;
     private WebView myWebView;
     private boolean canGoBack;
     private boolean correctUserName;
@@ -124,9 +126,20 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fdroid_tablet_layout);
 
-        Preferences.get().setPrefDeviceType(TABLET);
+        swipe = (SwipeRefreshLayout)findViewById(R.id.swipe);
 
         initWebView();
+
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                myWebView.loadUrl(lastUrl);
+                swipe.setRefreshing(true);
+            }
+        });
+        Preferences.get().setPrefDeviceType(TABLET);
+
 //        createViews();
 
 //        getTabManager().createTabs();
@@ -602,7 +615,14 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         @Override
         public void onPageFinished(android.webkit.WebView view, String url) {
             super.onPageFinished(view, url);
+            swipe.setRefreshing(false);
             Log.d(TAG, "onPageFinished: finished page with url = " + url);
+        }
+
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+
+            view.loadUrl("file:///android_asset/error.html");
+
         }
     }
 
