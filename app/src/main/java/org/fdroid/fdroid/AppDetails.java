@@ -463,7 +463,7 @@ public class AppDetails extends AppCompatActivity {
         refreshApkList();
         supportInvalidateOptionsMenu();
         if (DownloaderService.isQueuedOrActive(activeDownloadUrlString)) {
-            registerDownloaderReceiver();
+//            registerDownloaderReceiver();
         }
         visiblePackageName = app.packageName;
     }
@@ -977,7 +977,7 @@ public class AppDetails extends AppCompatActivity {
 
     private void startInstall(Apk apk) {
         activeDownloadUrlString = apk.getUrl();
-        registerDownloaderReceiver();
+//        registerDownloaderReceiver();
         InstallManagerService.queue(this, app, apk);
     }
 

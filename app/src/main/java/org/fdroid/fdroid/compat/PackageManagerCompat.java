@@ -26,7 +26,9 @@ public class PackageManagerCompat {
             if (Build.VERSION.SDK_INT >= 24 && PrivilegedInstaller.isDefault(context)) {
                 mPm.setInstallerPackageName(packageName, "org.fdroid.fdroid.privileged");
             } else {
-                mPm.setInstallerPackageName(packageName, "org.fdroid.fdroid");
+                // TODO: 5/24/2018 handle installer package name to match iris apps
+//                mPm.setInstallerPackageName(packageName, "org.fdroid.fdroid");
+                mPm.setInstallerPackageName(packageName, null);
             }
             Utils.debugLog(TAG, "Installer package name for " + packageName + " set successfully");
         } catch (Exception e) {

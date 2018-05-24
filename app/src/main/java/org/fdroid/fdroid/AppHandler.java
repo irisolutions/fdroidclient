@@ -563,7 +563,7 @@ public class AppHandler extends AppCompatActivity {
                     break;
                 case Installer.ACTION_INSTALL_COMPLETE:
                     headerFragment.removeProgress();
-
+                    Log.d(TAG, "onReceive: ===============================================");
                     localBroadcastManager.unregisterReceiver(this);
                     break;
                 case Installer.ACTION_INSTALL_INTERRUPTED:

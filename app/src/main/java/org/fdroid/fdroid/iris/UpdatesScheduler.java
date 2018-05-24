@@ -17,8 +17,7 @@ public class UpdatesScheduler {
     public void scheduleUpdates(Context context) {
         // Construct an intent that will execute the AlarmReceiver
         Intent intent = new Intent(context, AlarmUpdateReceiver.class);
-        // TODO: 4/9/2018 do interval 5 minutes
-        long interval = 1000 * 60 * 60; // 5 minutes
+        long interval = 1000 * 60 * 60; // 1 hour
         // Create a PendingIntent to be triggered when the alarm goes off
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context, AlarmUpdateReceiver.REQUEST_CODE,
                 intent,

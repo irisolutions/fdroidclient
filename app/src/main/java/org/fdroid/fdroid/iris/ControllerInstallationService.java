@@ -32,6 +32,7 @@ import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
+import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
@@ -295,8 +296,10 @@ public class ControllerInstallationService extends IntentService {
             }
             return apk;
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Couldn't find installed apk for " + app.packageName, e);
+            Log.e(TAG, "getInstalledApk: Couldn't find installed apk for " + app.packageName, e );
+            Toast.makeText(this, "getInstalledApk: Couldn't find installed apk for " + app.packageName, Toast.LENGTH_LONG);
+            return null;
+//            throw new IllegalStateException("Couldn't find installed apk for " + app.packageName, e);
         }
     }
 
@@ -309,6 +312,7 @@ public class ControllerInstallationService extends IntentService {
             // workaround would be unnecessary
 
             if (getInstalledApk() == null) {
+                PushAppStatusToServer.changeAppStatus(app.packageName, String.valueOf(6));
                 return;
             } else {
                 app.installedApk = getInstalledApk();
