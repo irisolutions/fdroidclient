@@ -253,12 +253,21 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         canGoBack = false;
         correctUserName = false;
         myWebView = (WebView) findViewById(R.id.webView);
-        myWebView.loadUrl(ConstantURLs.IrisStoreUrl);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         myWebView.setWebViewClient(new MyWebViewClient());
         myWebView.addJavascriptInterface(new UserJavaScriptInterface(), "UserJavaScriptInterface");
-        myWebView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev>(KHTML, like Gecko) Chrome/<Chrome Rev> Safari/<WebKit Rev>");
+        myWebView.setInitialScale(1);
+        myWebView.getSettings().setLoadWithOverviewMode(true);
+        myWebView.getSettings().setUseWideViewPort(true);
+//        myWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        myWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        myWebView.setScrollbarFadingEnabled(false);
+        myWebView.loadUrl(ConstantURLs.IrisStoreUrl);
+
+//        myWebView.setWebChromeClient(new WebChromeClient());
+
+//        myWebView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev>(KHTML, like Gecko) Chrome/<Chrome Rev> Safari/<WebKit Rev>");
 //        To turn cache off
 //        myWebView.getSettings().setAppCacheEnabled(false);
         //        myWebView.getSettings().setAppCacheEnabled(false);

@@ -22,7 +22,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
-import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -37,6 +36,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -76,7 +76,7 @@ import sun.net.www.protocol.bluetooth.Handler;
         reportDialogClass = org.fdroid.fdroid.acra.CrashReportActivity.class,
         reportSenderFactoryClasses = org.fdroid.fdroid.acra.CrashReportSenderFactory.class
 )
-public class FDroidApp extends Application {
+public class FDroidApp extends MultiDexApplication {
 
     private static final String TAG = "FDroidApp";
 

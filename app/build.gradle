@@ -16,6 +16,7 @@ def getVersionName = { ->
 
 repositories {
     jcenter()
+    google()
 }
 
 dependencies {
@@ -154,6 +155,14 @@ android {
     buildToolsVersion '26.0.2'
     useLibrary 'org.apache.http.legacy'
 
+    signingConfigs {
+        release {
+            keyAlias 'fdroid release'
+            keyPassword 'fdroidpass'
+            storeFile file('C:/Users/khale/fdroid.jks')
+            storePassword 'fdroidpass'
+        }
+    }
     buildTypes {
         // use proguard on debug too since we have unknowingly broken
         // release builds before.
@@ -164,6 +173,9 @@ android {
 //            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'src/androidTest/proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.release
         }
     }
 
@@ -179,6 +191,11 @@ android {
         versionCode 102350
         versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
     }
 
     testOptions {
@@ -230,6 +247,9 @@ android {
         exclude 'META-INF/INDEX.LIST'
         exclude '.readme'
     }
+
+
+
 }
 
 checkstyle {
