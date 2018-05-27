@@ -98,6 +98,7 @@ public class InstallManagerService extends Service {
      * {@code packageName} of the app.
      */
     private static final HashMap<String, App> ACTIVE_APPS = new HashMap<>(3);
+    public static final String IRIS_STORE = "Iris Store";
 
     private LocalBroadcastManager localBroadcastManager;
     private NotificationManager notificationManager;
@@ -402,7 +403,7 @@ public class InstallManagerService extends Service {
                 .addAction(R.drawable.ic_cancel_black_24dp, getString(R.string.cancel),
                         getCancelPendingIntent(urlString))
                 .setSmallIcon(android.R.drawable.stat_sys_download)
-                .setContentText(urlString)
+                .setContentText(IRIS_STORE)
                 .setProgress(100, 0, true);
     }
 

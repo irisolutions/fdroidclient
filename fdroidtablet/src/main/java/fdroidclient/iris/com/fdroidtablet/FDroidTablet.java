@@ -318,12 +318,17 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
     private class MyWebViewClient extends WebViewClient {
 
         private final String TAG = MyWebViewClient.class.getSimpleName();
+
         @Override
         public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
-            lastUrl = url;
-            view.loadUrl(url);
-            Log.d(TAG, "shouldOverrideUrlLoading: view url" + url);
-            return false;
+            if (url.startsWith("http://iris-store.iris.ps")) {
+                lastUrl = url;
+                view.loadUrl(url);
+                return false;
+            } else {
+                view.loadUrl("file:///android_asset/error.html");
+                return false;
+            }
         }
 
         @Override
