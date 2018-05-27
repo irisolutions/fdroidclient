@@ -8,7 +8,7 @@ package org.fdroid.fdroid.iris.net;
 
 public class ConstantURLs {
 
-    public static final String HOST_IP_ADDRESS = "http://54.218.75.137";
+    public static final String HOST_IP_ADDRESS = "http://iris-store.iris.ps";
 
     public static final String PUSH_DOWNLOAD_NOTIFICATION = HOST_IP_ADDRESS + "/IrisCentral/web/app_dev.php/dashboard/command/pushDownloadNotification";
     public static final String CHANGE_CONTROLLER_APP_STATUS = HOST_IP_ADDRESS + "/IrisCentral/web/app_dev.php/dashboard/command/changeControllerAppStatus";

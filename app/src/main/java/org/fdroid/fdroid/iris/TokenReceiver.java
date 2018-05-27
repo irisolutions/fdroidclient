@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.fdroid.fdroid.Preferences;
 import org.fdroid.fdroid.iris.net.ConstantURLs;
@@ -31,7 +30,7 @@ public class TokenReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
-        Log.d(TAG, "onReceive: receive message from FCM");
+        Log.d(TAG, "onReceive: receive message from FCM") ;
         if(intent.getAction().equalsIgnoreCase("fdroidclient.iris.com.fdroidtablet.services")||
                 intent.getAction().equalsIgnoreCase("fdroidclient.iris.com.fdroiddongle.services")) {
             if (bundle != null) {
@@ -45,13 +44,13 @@ public class TokenReceiver extends BroadcastReceiver {
                         registerUserToken();
                     }
                     Log.d(TAG, "onReceive: Token received" + token);
-                    Toast.makeText(context, "Token received" + token, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "Token received" + token, Toast.LENGTH_SHORT).show();
                 } else if (resultCode == MSG_CODE) {
                     String message = bundle.getString(MESSAGE);
                     String title = bundle.getString(TITLE);
                     Log.d(TAG, "onReceive: message received" + message);
                     Log.d(TAG, "onReceive: title received" + title);
-                    Toast.makeText(context, "Message received" + title + "\n" + message, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, "Message received" + title + "\n" + message, Toast.LENGTH_SHORT).show();
                     DoUpdate(context);
 //                startService(context, message, title);
                 } else {
