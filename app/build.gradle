@@ -20,35 +20,35 @@ repositories {
 }
 
 dependencies {
-    compile('ch.acra:acra:4.9.1') {
+    implementation('ch.acra:acra:4.9.1') {
         exclude module: 'support-v4'
         exclude module: 'support-annotations'
     }
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:support-annotations:24.2.1'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.google.zxing:core:3.2.1'
-    compile 'eu.chainfire:libsuperuser:1.0.0.201602271131'
-    compile 'cc.mvdan.accesspoint:library:0.2.0'
-    compile 'info.guardianproject.netcipher:netcipher:2.0.0-alpha1'
-    compile 'commons-io:commons-io:2.5'
-    compile 'commons-net:commons-net:3.5'
-    compile 'org.openhab.jmdns:jmdns:3.4.2'
-    compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxandroid:0.23.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.1.2'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    androidTestCompile 'com.android.support:support-annotations:24.2.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    implementation 'com.android.support:support-v4:24.2.1'
+    implementation 'com.android.support:appcompat-v7:24.2.1'
+    implementation 'com.android.support:support-annotations:24.2.1'
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    implementation 'com.google.zxing:core:3.2.1'
+    implementation 'eu.chainfire:libsuperuser:1.0.0.201602271131'
+    implementation 'cc.mvdan.accesspoint:library:0.2.0'
+    implementation 'info.guardianproject.netcipher:netcipher:2.0.0-alpha1'
+    implementation 'commons-io:commons-io:2.5'
+    implementation 'commons-net:commons-net:3.5'
+    implementation 'org.openhab.jmdns:jmdns:3.4.2'
+    implementation 'io.reactivex:rxjava:1.1.0'
+    implementation 'io.reactivex:rxandroid:0.23.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:3.1.2'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    androidTestImplementation 'com.android.support:support-annotations:24.2.1'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test:rules:0.5'
     //try to add these libraries here
-    compile 'com.madgag.spongycastle:pkix:1.53.0.0'
-    compile 'com.madgag.spongycastle:prov:1.53.0.0'
-    compile 'com.madgag.spongycastle:core:1.53.0.0'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.madgag.spongycastle:pkix:1.53.0.0'
+    implementation 'com.madgag.spongycastle:prov:1.53.0.0'
+    implementation 'com.madgag.spongycastle:core:1.53.0.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/binaryDeps/nanohttpd-2.1.0.jar')
     implementation files('libs/binaryDeps/zipsigner.jar')
     implementation files('libs/binaryDeps/support-v4-preferencefragment-release.aar')
@@ -151,15 +151,15 @@ dependencies {
 //}
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
     useLibrary 'org.apache.http.legacy'
 
     signingConfigs {
         release {
             keyAlias 'fdroid release'
             keyPassword 'fdroidpass'
-            storeFile file('C:/Users/khale/fdroid.jks')
+            storeFile file('/Users/mt2xcon/Iris Android Key Store/fdroid.jks')
             storePassword 'fdroidpass'
         }
     }
@@ -247,7 +247,6 @@ android {
         exclude 'META-INF/INDEX.LIST'
         exclude '.readme'
     }
-
 
 
 }
