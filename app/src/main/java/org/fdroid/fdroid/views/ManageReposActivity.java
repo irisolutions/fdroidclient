@@ -38,8 +38,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -74,7 +74,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 
-public class ManageReposActivity extends ActionBarActivity {
+public class ManageReposActivity extends AppCompatActivity {
     private static final String TAG = "ManageReposActivity";
 
     private static final String DEFAULT_NEW_REPO_TEXT = "https://";

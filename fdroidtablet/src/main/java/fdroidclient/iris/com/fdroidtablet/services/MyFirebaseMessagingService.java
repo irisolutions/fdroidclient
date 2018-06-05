@@ -19,7 +19,7 @@ import fdroidclient.iris.com.fdroidtablet.utiles.NotificationUtils;
  */
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-    private static final String TAG = "MyFirebaseMsgingService";
+    private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
     private static final String TITLE = "title";
     private static final String EMPTY = "";
     private static final String MESSAGE = "message";

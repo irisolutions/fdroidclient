@@ -366,11 +366,12 @@ public class ControllerInstallationService extends IntentService {
                     if (!TextUtils.isEmpty(errorMessage)) {
                         Log.e(TAG, "uninstall aborted with errorMessage: " + errorMessage);
 
-                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getApplicationContext());
-                        alertBuilder.setTitle(R.string.uninstall_error_notify_title);
-                        alertBuilder.setMessage(errorMessage);
-                        alertBuilder.setNeutralButton(android.R.string.ok, null);
-                        alertBuilder.create().show();
+//                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getApplicationContext());
+//                        alertBuilder.setTitle(R.string.uninstall_error_notify_title);
+//                        alertBuilder.setMessage(errorMessage);
+//                        alertBuilder.setNeutralButton(android.R.string.ok, null);
+//                        alertBuilder.create().show();
+                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
                     }
 
                     localBroadcastManager.unregisterReceiver(this);
