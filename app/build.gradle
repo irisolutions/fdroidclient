@@ -159,7 +159,7 @@ android {
         release {
             keyAlias 'fdroid release'
             keyPassword 'fdroidpass'
-            storeFile file('C:/Users/khale/fdroid.jks')
+            storeFile file('/Users/mt2xcon/Iris Android Key Store/fdroid.jks')
             storePassword 'fdroidpass'
         }
     }
