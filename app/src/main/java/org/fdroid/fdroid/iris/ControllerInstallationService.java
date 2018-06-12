@@ -66,7 +66,7 @@ public class ControllerInstallationService extends IntentService {
 
     public ControllerInstallationService() {
 
-        super(DongleInstallationService.class.getSimpleName());
+        super(ControllerInstallationService.class.getSimpleName());
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 

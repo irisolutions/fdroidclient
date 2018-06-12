@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.fdroid.fdroid.Preferences;
 import org.fdroid.fdroid.R;
@@ -91,6 +92,7 @@ public class DefaultInstallerActivity extends FragmentActivity {
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
             Log.d(TAG, "installPackage: " + uri.getPath());
             SudoInstall.install(uri.getPath());
+            Toast.makeText(this, "Sudo install ", Toast.LENGTH_LONG).show();
             installer.sendBroadcastInstall(downloadUri, Installer.ACTION_INSTALL_COMPLETE);
         }else {
 
@@ -142,19 +144,22 @@ public class DefaultInstallerActivity extends FragmentActivity {
             Log.e(TAG, "NameNotFoundException", e);
             // TODO: 4/19/2018 create Default installer for dongle
             if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
+                installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_INTERRUPTED,
+                        "Package that is scheduled for uninstall is not installed!");
+                finish();
                 return;
             } else {
                 installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_INTERRUPTED,
                         "Package that is scheduled for uninstall is not installed!");
                 finish();
                 return;
-
             }
         }
 
         if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
             Log.d(TAG, "unInstallPackage: " + packageName);
             SudoInstall.unInstall(packageName);
+            Toast.makeText(this, "Sudo uninstall ", Toast.LENGTH_LONG).show();
             installer.sendBroadcastUninstall(Installer.ACTION_UNINSTALL_COMPLETE);
             return;
         }else {

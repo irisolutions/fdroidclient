@@ -17,11 +17,16 @@ import java.util.List;
 
 public class SudoInstall {
 
-
     private static final String TAG = SudoInstall.class.getSimpleName();
+    public static final int MIN_PRIORITY = 1;
 
     public static void install(String path) {
         SudoInstallRunnable sudoRunnable = new SudoInstallRunnable(path);
+        new Thread(sudoRunnable).start();
+    }
+
+    public static void unInstall(String packageName) {
+        SudoUnInstallRunnable sudoRunnable = new SudoUnInstallRunnable(packageName);
         new Thread(sudoRunnable).start();
     }
 
@@ -59,10 +64,6 @@ public class SudoInstall {
         }
     }
 
-    public static void unInstall(String packageName) {
-        SudoUnInstallRunnable sudoRunnable = new SudoUnInstallRunnable(packageName);
-        new Thread(sudoRunnable).start();
-    }
 
 
     static class SudoUnInstallRunnable implements Runnable {
@@ -97,5 +98,4 @@ public class SudoInstall {
             }
         }
     }
-
 }

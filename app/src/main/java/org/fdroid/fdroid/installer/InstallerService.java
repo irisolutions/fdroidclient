@@ -103,7 +103,7 @@ public class InstallerService extends IntentService {
                 }
             }.start();
         }
-    }
+        }
 
     /**
      * Install an apk from {@link Uri}

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
+import org.fdroid.fdroid.BuildConfig;
 import org.fdroid.fdroid.installer.PrivilegedInstaller;
 import org.fdroid.fdroid.Utils;
 
@@ -28,7 +29,7 @@ public class PackageManagerCompat {
             } else {
                 // TODO: 5/24/2018 handle installer package name to match iris apps
 //                mPm.setInstallerPackageName(packageName, "org.fdroid.fdroid");
-                mPm.setInstallerPackageName(packageName, null);
+                mPm.setInstallerPackageName(packageName, BuildConfig.APPLICATION_ID);
             }
             Utils.debugLog(TAG, "Installer package name for " + packageName + " set successfully");
         } catch (Exception e) {
@@ -42,5 +43,4 @@ public class PackageManagerCompat {
                     packageName, e);
         }
     }
-
 }

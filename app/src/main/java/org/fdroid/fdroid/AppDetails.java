@@ -103,8 +103,6 @@ import org.fdroid.fdroid.privileged.views.AppSecurityPermissions;
 
 import java.util.List;
 
-//import org.fdroid.fdroid.data.Schema;
-
 public class AppDetails extends AppCompatActivity {
 
     private static final String TAG = "AppDetails";

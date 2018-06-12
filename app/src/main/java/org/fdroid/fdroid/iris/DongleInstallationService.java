@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Process;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -32,6 +33,7 @@ import org.fdroid.fdroid.installer.InstallManagerService;
 import org.fdroid.fdroid.installer.Installer;
 import org.fdroid.fdroid.installer.InstallerFactory;
 import org.fdroid.fdroid.installer.InstallerService;
+import org.fdroid.fdroid.iris.net.PushAppStatusToServer;
 import org.fdroid.fdroid.net.Downloader;
 import org.fdroid.fdroid.net.DownloaderService;
 
@@ -73,6 +75,9 @@ public class DongleInstallationService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+//        Process.setThreadPriority(Process.THREAD_PRIORITY_LOWEST);
+        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
         packageManager = getApplicationContext().getPackageManager();
         Bundle bundle = null;
         if (intent != null) {
@@ -297,13 +302,14 @@ public class DongleInstallationService extends IntentService {
                 if (installedApp == null) {
                     throw new IllegalStateException("No installed app found when trying to uninstall");
                 }
-
                 apk = new Apk(installedApp);
             }
             return apk;
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Couldn't find installed apk for " + app.packageName, e);
+            Log.e(TAG, "name not found exception", e);
+            Toast.makeText(getApplicationContext(), "Couldn't find installed apk for", Toast.LENGTH_SHORT).show();
+            return null;
+//            throw new IllegalStateException("Couldn't find installed apk for " + app.packageName, e);
         }
     }
 
@@ -317,12 +323,12 @@ public class DongleInstallationService extends IntentService {
 
             if (getInstalledApk() == null) {
                 Log.d(TAG, "uninstallApk: installed apk = null");
+                PushAppStatusToServer.changeAppStatus(app.packageName, String.valueOf(6));
                 return;
             } else {
                 app.installedApk = getInstalledApk();
             }
         }
-
 
         Installer installer = InstallerFactory.create(this, app.installedApk);
         Intent intent = installer.getUninstallScreen();
@@ -358,7 +364,6 @@ public class DongleInstallationService extends IntentService {
                     break;
                 case Installer.ACTION_UNINSTALL_COMPLETE:
 //                    headerFragment.removeProgress();
-                    onAppChanged();
                     localBroadcastManager.unregisterReceiver(this);
                     break;
                 case Installer.ACTION_UNINSTALL_INTERRUPTED:
@@ -396,19 +401,6 @@ public class DongleInstallationService extends IntentService {
         }
     };
 
-
-    private void onAppChanged() {
-//        if (!reset(app.packageName)) {
-//            this.finish();
-//            return;
-//        }
-////// we don't need them in service
-//        refreshApkList();
-//        refreshHeader();
-//        supportInvalidateOptionsMenu();
-    }
-
-
     private void showToast(final String message, final String title) {
         if (toastHandler == null) {
             toastHandler = new Handler(Looper.getMainLooper());
@@ -434,7 +426,7 @@ public class DongleInstallationService extends IntentService {
 //                    }
                     break;
                 case Downloader.ACTION_PROGRESS:
-                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_PROGRESS");
+//                    Log.d(TAG, "onReceive: downloadReceiver : ACTION_PROGRESS");
 
 //                    if (headerFragment != null) {
 //                        headerFragment.updateProgress(intent.getIntExtra(Downloader.EXTRA_BYTES_READ, -1),
@@ -484,8 +476,6 @@ public class DongleInstallationService extends IntentService {
                     break;
                 case Installer.ACTION_INSTALL_INTERRUPTED:
                     Log.d(TAG, "onReceive: installReceiver ==>ACTION_INSTALL_INTERRUPTED ");
-//                    headerFragment.removeProgress();
-                    onAppChanged();
                     String errorMessage =
                             intent.getStringExtra(Installer.EXTRA_ERROR_MESSAGE);
 

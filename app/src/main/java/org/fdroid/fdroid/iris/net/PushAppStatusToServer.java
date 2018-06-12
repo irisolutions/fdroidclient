@@ -47,14 +47,14 @@ public class PushAppStatusToServer extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        try {
-            JSONObject object = new JSONObject(result);
-            if (object.getBoolean("success")) {
-                Log.d(TAG, "onPostExecute: success");
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "onPostExecute: JSONException", e);
-        }
+//        try {
+//            JSONObject object = new JSONObject(result);
+//            if (object.getBoolean("success")) {
+//                Log.d(TAG, "onPostExecute: success");
+//            }
+//        } catch (JSONException e) {
+//            Log.e(TAG, "onPostExecute: JSONException", e);
+//        }
     }
 
     //the network operation will be performed in background

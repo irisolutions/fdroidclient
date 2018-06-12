@@ -5,6 +5,7 @@
 
 
     <application
+        android:name="org.fdroid.fdroid.FDroidApp"
         tools:replace="android:icon,android:theme"
         android:description="@string/app_description"
         android:fullBackupContent="true"

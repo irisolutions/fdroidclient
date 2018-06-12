@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -336,8 +337,14 @@ public class InstallManagerService extends Service {
                         break;
                     case Installer.ACTION_INSTALL_COMPLETE:
                         Apk apkComplete = removeFromActive(downloadUrl);
+                        if (Preferences.get().getPrefDeviceType().equalsIgnoreCase("dongle")) {
 
-                        PackageManagerCompat.setInstaller(context, getPackageManager(), apkComplete.packageName);
+                            Handler handler = new Handler();
+                            DongleRunnable dongleRunnable1 = new DongleRunnable(apkComplete.packageName);
+//                            handler.postDelayed(dongleRunnable1, 6000);
+                        } else {
+                            PackageManagerCompat.setInstaller(context, getPackageManager(), apkComplete.packageName);
+                        }
                         if (PrivilegedInstaller.isDefault(context)) {
                             cancelNotification(downloadUrl);
                         }
@@ -421,7 +428,7 @@ public class InstallManagerService extends Service {
         Intent notifyIntent = new Intent(getApplicationContext(), AppDetails.class)
                 .putExtra(AppDetails.EXTRA_APPID, apk.packageName);
         return TaskStackBuilder.create(getApplicationContext())
-                .addParentStack(AppDetails.class)
+//                .addParentStack(AppDetails.class)
                 .addNextIntent(notifyIntent)
                 .getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -591,6 +598,21 @@ public class InstallManagerService extends Service {
         intent.setData(Uri.parse(urlString));
         context.startService(intent);
     }
+
+    class DongleRunnable implements Runnable {
+        String packageName;
+
+        public DongleRunnable(String packageName) {
+            this.packageName = packageName;
+        }
+
+        @Override
+        public void run() {
+            PackageManagerCompat.setInstaller(getApplicationContext(), getPackageManager(), packageName);
+        }
+
+    }
+
 
     /**
      * Returns a {@link Set} of the {@code urlString}s that are currently active.
