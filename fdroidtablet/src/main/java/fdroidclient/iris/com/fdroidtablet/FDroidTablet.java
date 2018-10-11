@@ -67,7 +67,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
     private UpdatesScheduler updatesScheduler;
     public static final String TABLET = "tablet";
 
-    SwipeRefreshLayout swipe;
+//    SwipeRefreshLayout swipe;
     private WebView myWebView;
     private boolean canGoBack;
     private boolean correctUserName;
@@ -83,18 +83,18 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fdroid_tablet_layout);
 
-        swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
+//        swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
 
         initWebView();
 
-        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                myWebView.loadUrl(lastUrl);
-                swipe.setRefreshing(true);
-            }
-        });
+//        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//
+//                myWebView.loadUrl(lastUrl);
+//                swipe.setRefreshing(true);
+//            }
+//        });
         Preferences.get().setPrefDeviceType(TABLET);
 
         // Start a search by just typin     g
@@ -264,7 +264,6 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
         myWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         myWebView.setScrollbarFadingEnabled(false);
         myWebView.loadUrl(ConstantURLs.IrisStoreUrl);
-
 //        myWebView.setWebChromeClient(new WebChromeClient());
 
 //        myWebView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev>(KHTML, like Gecko) Chrome/<Chrome Rev> Safari/<WebKit Rev>");
@@ -278,6 +277,11 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
             public static final String TAG = "TouchListener";
 
             public boolean onTouch(View v, MotionEvent event) {
+                if(myWebView.getTitle().equals("No Connection"))
+                {
+                    myWebView.loadUrl(ConstantURLs.IrisStoreUrl);
+                    Log.d(TAG,"do reload");
+                }
                 android.webkit.WebView.HitTestResult hitTestResult = ((android.webkit.WebView) v).getHitTestResult();
                 if (hitTestResult == null) {
                     return false;
@@ -321,7 +325,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
         @Override
         public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
-            if (url.startsWith("http://iris-store.iris.ps")) {
+            if (url.startsWith("")) {
                 lastUrl = url;
                 view.loadUrl(url);
                 return false;
@@ -333,7 +337,7 @@ public class FDroidTablet extends Activity implements SearchView.OnQueryTextList
 
         @Override
         public void onPageFinished(android.webkit.WebView view, String url) {
-            swipe.setRefreshing(false);
+//            .swipesetRefreshing(false);
             super.onPageFinished(view, url);
             Log.d(TAG, "onPageFinished: finished page with url = " + url);
         }
